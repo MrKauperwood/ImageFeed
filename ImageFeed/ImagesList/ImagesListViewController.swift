@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ImagesListViewController: UIViewController {
+final class ImagesListViewController: UIViewController {
     @IBOutlet private  var tableView: UITableView!
     
     private let photosName: [String] = Array(0..<20).map{"\($0)"}
@@ -15,7 +15,6 @@ class ImagesListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.rowHeight = 200
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
         
         tableView.delegate = self
@@ -23,13 +22,13 @@ class ImagesListViewController: UIViewController {
         
     }
     
+    
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ru_RU")
         formatter.dateFormat = "d MMMM yyyy"
         return formatter
     }()
-    
     
 }
 
@@ -88,7 +87,7 @@ extension ImagesListViewController{
         let dateString = dateFormatter.string(from: currentDate)
         cell.dateLabel.text = dateString
         
-        let isLiked = indexPath.row % 2 == 0
+        let isLiked = indexPath.row % 2 != 0
         let likeImage = isLiked ? UIImage(named: "ActiveLike") : UIImage(named: "NotActiveLike")
         cell.likeButton.setImage(likeImage, for: .normal)
     }
