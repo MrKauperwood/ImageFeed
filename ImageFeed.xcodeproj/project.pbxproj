@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		F0716F262BD975DD001560CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0716F252BD975DD001560CD /* AppDelegate.swift */; };
 		F0716F282BD975DD001560CD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0716F272BD975DD001560CD /* SceneDelegate.swift */; };
-		F0716F2A2BD975DD001560CD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0716F292BD975DD001560CD /* ViewController.swift */; };
+		F0716F2A2BD975DD001560CD /* ImagesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0716F292BD975DD001560CD /* ImagesListViewController.swift */; };
 		F0716F2D2BD975DD001560CD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0716F2B2BD975DD001560CD /* Main.storyboard */; };
 		F0716F302BD975DD001560CD /* ImageFeed.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F0716F2E2BD975DD001560CD /* ImageFeed.xcdatamodeld */; };
 		F0716F322BD975E1001560CD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0716F312BD975E1001560CD /* Assets.xcassets */; };
@@ -17,6 +17,7 @@
 		F0716F402BD975E2001560CD /* ImageFeedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0716F3F2BD975E2001560CD /* ImageFeedTests.swift */; };
 		F0716F4A2BD975E2001560CD /* ImageFeedUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0716F492BD975E2001560CD /* ImageFeedUITests.swift */; };
 		F0716F4C2BD975E2001560CD /* ImageFeedUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0716F4B2BD975E2001560CD /* ImageFeedUITestsLaunchTests.swift */; };
+		F0AEC0312BEE2C33007F1412 /* ImagesListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AEC0302BEE2C33007F1412 /* ImagesListCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,7 +41,7 @@
 		F0716F222BD975DD001560CD /* ImageFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0716F252BD975DD001560CD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F0716F272BD975DD001560CD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		F0716F292BD975DD001560CD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F0716F292BD975DD001560CD /* ImagesListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListViewController.swift; sourceTree = "<group>"; };
 		F0716F2C2BD975DD001560CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F0716F2F2BD975DD001560CD /* ImageFeed.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ImageFeed.xcdatamodel; sourceTree = "<group>"; };
 		F0716F312BD975E1001560CD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -51,6 +52,7 @@
 		F0716F452BD975E2001560CD /* ImageFeedUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImageFeedUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0716F492BD975E2001560CD /* ImageFeedUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFeedUITests.swift; sourceTree = "<group>"; };
 		F0716F4B2BD975E2001560CD /* ImageFeedUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFeedUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		F0AEC0302BEE2C33007F1412 /* ImagesListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,12 +105,12 @@
 			children = (
 				F0716F252BD975DD001560CD /* AppDelegate.swift */,
 				F0716F272BD975DD001560CD /* SceneDelegate.swift */,
-				F0716F292BD975DD001560CD /* ViewController.swift */,
 				F0716F2B2BD975DD001560CD /* Main.storyboard */,
 				F0716F312BD975E1001560CD /* Assets.xcassets */,
 				F0716F332BD975E1001560CD /* LaunchScreen.storyboard */,
 				F0716F362BD975E1001560CD /* Info.plist */,
 				F0716F2E2BD975DD001560CD /* ImageFeed.xcdatamodeld */,
+				F0AEC0322BEE2C7D007F1412 /* ImagesList */,
 			);
 			path = ImageFeed;
 			sourceTree = "<group>";
@@ -128,6 +130,15 @@
 				F0716F4B2BD975E2001560CD /* ImageFeedUITestsLaunchTests.swift */,
 			);
 			path = ImageFeedUITests;
+			sourceTree = "<group>";
+		};
+		F0AEC0322BEE2C7D007F1412 /* ImagesList */ = {
+			isa = PBXGroup;
+			children = (
+				F0AEC0302BEE2C33007F1412 /* ImagesListCell.swift */,
+				F0716F292BD975DD001560CD /* ImagesListViewController.swift */,
+			);
+			path = ImagesList;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -261,8 +272,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0716F2A2BD975DD001560CD /* ViewController.swift in Sources */,
+				F0716F2A2BD975DD001560CD /* ImagesListViewController.swift in Sources */,
 				F0716F302BD975DD001560CD /* ImageFeed.xcdatamodeld in Sources */,
+				F0AEC0312BEE2C33007F1412 /* ImagesListCell.swift in Sources */,
 				F0716F262BD975DD001560CD /* AppDelegate.swift in Sources */,
 				F0716F282BD975DD001560CD /* SceneDelegate.swift in Sources */,
 			);
