@@ -44,7 +44,6 @@ final class ImagesListViewController: UIViewController {
                 print("Image \(imageName) loaded successfully")
             }
             
-            _ = viewController.view
             viewController.image = image
             
         }
