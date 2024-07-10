@@ -42,6 +42,7 @@ final class OAuth2Service {
                 }
                 return
             }
+            
             do {
                 let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
                 

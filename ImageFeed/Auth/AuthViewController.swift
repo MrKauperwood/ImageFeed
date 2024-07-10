@@ -53,6 +53,10 @@ final class AuthViewController : UIViewController, WebViewViewControllerDelegate
             webViewViewController.delegate = self
         }
     }
+    
+    protocol AuthViewControllerDelegate: AnyObject {
+        func didAuthenticate(_ vc: AuthViewController)
+    }
 
 
 }
