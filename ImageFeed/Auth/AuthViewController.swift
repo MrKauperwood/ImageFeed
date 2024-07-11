@@ -5,7 +5,6 @@
 //  Created by Aleksei Bondarenko on 4.7.2024.
 //
 
-import Foundation
 import UIKit
 
 protocol AuthViewControllerDelegate: AnyObject {
@@ -25,10 +24,6 @@ final class AuthViewController : UIViewController, WebViewViewControllerDelegate
         configureBackButton()
     }
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .darkContent
-    }
-
     private func configureBackButton() {
         navigationController?.navigationBar.backIndicatorImage = UIImage(named: "nav_back_button")
         navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav_back_button")
@@ -68,4 +63,3 @@ final class AuthViewController : UIViewController, WebViewViewControllerDelegate
     }
     
 }
-

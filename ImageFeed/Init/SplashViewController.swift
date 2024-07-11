@@ -56,10 +56,6 @@ final class SplashViewController: UIViewController {
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
     private func switchRootViewController(to identifier: String) {
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid window configuration")
