@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		F018F46D2C3B1959004EC349 /* OAuth2TokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F018F46C2C3B1959004EC349 /* OAuth2TokenStorage.swift */; };
 		F0192D7D2C33665400DD57F8 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0192D7C2C33665400DD57F8 /* Constants.swift */; };
+		F02CA7842C40303500E1AABD /* OAuthTokenResponseBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02CA7832C40303500E1AABD /* OAuthTokenResponseBody.swift */; };
 		F0716F262BD975DD001560CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0716F252BD975DD001560CD /* AppDelegate.swift */; };
 		F0716F282BD975DD001560CD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0716F272BD975DD001560CD /* SceneDelegate.swift */; };
 		F0716F2A2BD975DD001560CD /* ImagesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0716F292BD975DD001560CD /* ImagesListViewController.swift */; };
@@ -49,6 +50,7 @@
 /* Begin PBXFileReference section */
 		F018F46C2C3B1959004EC349 /* OAuth2TokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth2TokenStorage.swift; sourceTree = "<group>"; };
 		F0192D7C2C33665400DD57F8 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		F02CA7832C40303500E1AABD /* OAuthTokenResponseBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthTokenResponseBody.swift; sourceTree = "<group>"; };
 		F0716F222BD975DD001560CD /* ImageFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0716F252BD975DD001560CD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F0716F272BD975DD001560CD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -196,6 +198,7 @@
 				F0DF79712C375F3000B0BE4E /* WebViewViewControllerDelegate.swift */,
 				F0DF79732C3AC38800B0BE4E /* OAuth2Service.swift */,
 				F018F46C2C3B1959004EC349 /* OAuth2TokenStorage.swift */,
+				F02CA7832C40303500E1AABD /* OAuthTokenResponseBody.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -345,6 +348,7 @@
 				F0DF796E2C36FBC800B0BE4E /* AuthViewController.swift in Sources */,
 				F018F46D2C3B1959004EC349 /* OAuth2TokenStorage.swift in Sources */,
 				F0192D7D2C33665400DD57F8 /* Constants.swift in Sources */,
+				F02CA7842C40303500E1AABD /* OAuthTokenResponseBody.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

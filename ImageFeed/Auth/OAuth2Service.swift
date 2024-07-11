@@ -44,19 +44,10 @@ final class OAuth2Service {
             }
             
             do {
-                let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                
-                if let accessToken = json?["access_token"] as? String {
-                    DispatchQueue.main.async {
-                        print("Successfully received token: \(accessToken)")
-                        completion(.success(accessToken))
-                    }
-                } else {
-                    let error = NSError(domain: "OAuth2", code: -1, userInfo: [NSLocalizedDescriptionKey: "No access token"])
-                    DispatchQueue.main.async {
-                        print("Service error: \(error.localizedDescription)")
-                        completion(.failure(error))
-                    }
+                let responseBody = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: data)
+                DispatchQueue.main.async {
+                    print("Successfully received token: \(responseBody.accessToken)")
+                    completion(.success(responseBody.accessToken))
                 }
             } catch {
                 DispatchQueue.main.async {

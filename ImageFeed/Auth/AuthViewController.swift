@@ -24,6 +24,10 @@ final class AuthViewController : UIViewController, WebViewViewControllerDelegate
         super.viewDidLoad()
         configureBackButton()
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .darkContent
+    }
 
     private func configureBackButton() {
         navigationController?.navigationBar.backIndicatorImage = UIImage(named: "nav_back_button")

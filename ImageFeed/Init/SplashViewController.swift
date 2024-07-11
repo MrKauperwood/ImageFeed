@@ -41,7 +41,10 @@ final class SplashViewController: UIViewController {
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthScreen"
     private let tabBarControllerIdentifier = "TabBarViewController"
     private let authViewForAuthControllerIdentifier = "NavigationViewForAuthController"
-    private var isTokenExist = false
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -49,7 +52,6 @@ final class SplashViewController: UIViewController {
         if let token = storage.token {
             switchRootViewController(to: tabBarControllerIdentifier)
         } else {
-//            switchRootViewController(to: authViewForAuthControllerIdentifier)
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
         }
     }
@@ -81,7 +83,4 @@ final class SplashViewController: UIViewController {
         window.makeKeyAndVisible()
     }
     
-    
 }
-
-
