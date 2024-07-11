@@ -8,7 +8,12 @@
 import Foundation
 import UIKit
 
+protocol AuthViewControllerDelegate: AnyObject {
+    func didAuthenticate(_ vc: AuthViewController)
+}
+
 final class AuthViewController : UIViewController, WebViewViewControllerDelegate {
+    weak var delegate: AuthViewControllerDelegate?
     
     private let oauth2Service = OAuth2Service.shared
     private let tokenStorage = OAuth2TokenStorage()
@@ -28,13 +33,17 @@ final class AuthViewController : UIViewController, WebViewViewControllerDelegate
     }
     
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
+        vc.dismiss(animated: true)
+        
         print("Delegate method called with code: \(code)")
+        
         oauth2Service.fetchOAuthToken(code: code) {
             result in
             switch result {
             case .success(let token):
                 print("Token received: \(token)")
                 self.tokenStorage.token = token
+                self.delegate?.didAuthenticate(self)
                 
             case .failure(let error):
                 print("Failed to fetch token: \(error)")
@@ -54,10 +63,5 @@ final class AuthViewController : UIViewController, WebViewViewControllerDelegate
         }
     }
     
-    protocol AuthViewControllerDelegate: AnyObject {
-        func didAuthenticate(_ vc: AuthViewController)
-    }
-
-
 }
 
