@@ -8,9 +8,12 @@
 import Foundation
 
 final class OAuth2TokenStorage {
+    // MARK: - Private Properties
     private let userDefaults = UserDefaults.standard
     private let tokenKey = "BearerToken"
     
+    
+    // MARK: - Public Methods
     var token: String? {
         get {
             return userDefaults.string(forKey: tokenKey)

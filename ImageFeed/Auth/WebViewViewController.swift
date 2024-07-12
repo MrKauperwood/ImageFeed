@@ -11,12 +11,20 @@ import WebKit
 
 
 final class WebViewViewController: UIViewController {
-    weak var delegate: WebViewViewControllerDelegate?
     
+    // MARK: - IB Outlets
     @IBOutlet private var webView: WKWebView!
-    
     @IBOutlet private var progressView: UIProgressView!
     
+    // MARK: - Public Properties
+    weak var delegate: WebViewViewControllerDelegate?
+    
+    // MARK: - Private Properties
+    private enum WebViewConstants {
+        static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
+    }
+    
+    // MARK: - Overrides Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -39,11 +47,6 @@ final class WebViewViewController: UIViewController {
         webView.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), context: nil)
     }
 
-    
-    enum WebViewConstants {
-        static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
-    }
-    
     override func observeValue(
         forKeyPath keyPath: String?,
         of object: Any?,
@@ -57,6 +60,7 @@ final class WebViewViewController: UIViewController {
         }
     }
     
+    // MARK: - Private Methods
     private func updateProgress() {
         progressView.progress = Float(webView.estimatedProgress)
         progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
@@ -83,17 +87,6 @@ final class WebViewViewController: UIViewController {
 
 
 extension WebViewViewController: WKNavigationDelegate {
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        if let code = code(from: navigationAction) {
-            print("Authorization code received: \(code)")
-            delegate?.webViewViewController(self, didAuthenticateWithCode: code)
-            decisionHandler(.cancel)
-        } else {
-            decisionHandler(.allow)
-        }
-        print("Navigation action: \(navigationAction.request.url?.absoluteString ?? "no url")") // Отладочный вывод
-    }
-    
     private func code(from navigationAction: WKNavigationAction) -> String? {
         if let url = navigationAction.request.url {
             print("Navigating to URL: \(url.absoluteString)")
@@ -106,6 +99,17 @@ extension WebViewViewController: WKNavigationDelegate {
             }
         }
         return nil
+    }
+    
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        if let code = code(from: navigationAction) {
+            print("Authorization code received: \(code)")
+            delegate?.webViewViewController(self, didAuthenticateWithCode: code)
+            decisionHandler(.cancel)
+        } else {
+            decisionHandler(.allow)
+        }
+        print("Navigation action: \(navigationAction.request.url?.absoluteString ?? "no url")") // Отладочный вывод
     }
 }
 

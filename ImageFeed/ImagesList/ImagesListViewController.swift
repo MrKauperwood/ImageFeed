@@ -8,20 +8,27 @@
 import UIKit
 
 final class ImagesListViewController: UIViewController {
-    private let showSingleImageSegueIdentifier = "ShowSingleImage"
     
+    // MARK: - IB Outlets
     @IBOutlet private  var tableView: UITableView!
     
+    // MARK: - Private Properties
+    private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let photosName: [String] = Array(0..<20).map{"\($0)"}
+    private lazy var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ru_RU")
+        formatter.dateFormat = "d MMMM yyyy"
+        return formatter
+    }()
     
+    // MARK: - Overrides Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
-        
         tableView.delegate = self
         tableView.dataSource = self
-        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -37,7 +44,6 @@ final class ImagesListViewController: UIViewController {
             let imageName = photosName[indexPath.row]
             let image = UIImage(named: imageName)
             
-            
             if image == nil {
                 print("Image is nil for \(imageName)")
             } else {
@@ -45,23 +51,12 @@ final class ImagesListViewController: UIViewController {
             }
             
             viewController.image = image
-            
         }
         else {
             super.prepare(for: segue, sender: sender)
         }
     }
-    
-    
-    private lazy var dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ru_RU")
-        formatter.dateFormat = "d MMMM yyyy"
-        return formatter
-    }()
-    
 }
-
 
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -87,7 +82,6 @@ extension ImagesListViewController: UITableViewDelegate {
     }
 }
 
-
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return photosName.count
@@ -106,7 +100,6 @@ extension ImagesListViewController: UITableViewDataSource {
     }
 }
 
-
 extension ImagesListViewController{
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         guard let image = UIImage(named: photosName[indexPath.row]) else {
@@ -124,4 +117,3 @@ extension ImagesListViewController{
     }
     
 }
-

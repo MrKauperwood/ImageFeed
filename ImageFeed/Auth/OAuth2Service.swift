@@ -8,10 +8,14 @@
 import Foundation
 
 final class OAuth2Service {
-    static let shared  = OAuth2Service()
-    private init() {
-    }
     
+    // MARK: - Public Properties
+    static let shared  = OAuth2Service()
+    
+    // MARK: - Initializers
+    private init() {}
+    
+    // MARK: - Public Methods
     func fetchOAuthToken(code : String, completion: @escaping (Result<String, Error>) -> Void) {
         
         guard let request = makeTokenRequest(with: code) else {
@@ -44,7 +48,9 @@ final class OAuth2Service {
             }
             
             do {
-                let responseBody = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: data)
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                let responseBody = try decoder.decode(OAuthTokenResponseBody.self, from: data)
                 DispatchQueue.main.async {
                     print("Successfully received token: \(responseBody.accessToken)")
                     completion(.success(responseBody.accessToken))
@@ -62,6 +68,7 @@ final class OAuth2Service {
         
     }
     
+    // MARK: - Private Methods
     private func makeTokenRequest(with code: String) -> URLRequest? {
         var urlComponents = URLComponents(string: Constants.getTokenURL.absoluteString)
         
