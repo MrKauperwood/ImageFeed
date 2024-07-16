@@ -11,24 +11,46 @@ import UIKit
 final class SplashViewController: UIViewController {
     
     // MARK: - Private Properties
-    private let storage = OAuth2TokenStorage()
+    private let storage = OAuth2TokenActions()
+    private let profileService = ProfileService.shared
+    private let profileImageService = ProfileImageService.shared
+    
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthScreen"
     private let tabBarControllerIdentifier = "TabBarViewController"
     private let authViewForAuthControllerIdentifier = "NavigationViewForAuthController"
+    
+    // MARK: - UI Elements
+    private let splashImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(named: "Logo_of_Unsplash"))
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
     
     // MARK: - Overrides Methods
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupUI()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if storage.token != nil {
-            switchRootViewController(to: tabBarControllerIdentifier)
+        if let token = storage.getTokenFromStorage() {
+            fetchProfile(token)
         } else {
-            performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let authViewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as! AuthViewController
+            authViewController.delegate = self
+            authViewController.modalPresentationStyle = .fullScreen
+            self.present(authViewController, animated: true, completion: nil)
         }
+        
+        
     }
     
     // MARK: - Private Methods
@@ -55,29 +77,73 @@ final class SplashViewController: UIViewController {
         window.makeKeyAndVisible()
     }
     
+    private func setupUI() {
+        view.addSubview(splashImageView)
+        
+        NSLayoutConstraint.activate([
+            splashImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            splashImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
 }
 
 extension SplashViewController : AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
-        vc.dismiss(animated: true) {
-            self.switchRootViewController(to: self.tabBarControllerIdentifier)
+        vc.dismiss(animated: true)
+        
+        guard let token = storage.getTokenFromStorage() else {
+            return
         }
+        
+        fetchProfile(token)
     }
-}
-
-extension SplashViewController {
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showAuthenticationScreenSegueIdentifier {
-            guard
-                let navigationController = segue.destination as? UINavigationController,
-                let viewController = navigationController.viewControllers.first as? AuthViewController
-            else {
-                assertionFailure("Failed to prepare for \(showAuthenticationScreenSegueIdentifier)")
-                return
+    
+    
+    private func fetchProfile(_ token: String) {
+        UIBlockingProgressHUD.show()
+        
+        profileService.fetchProfile(token) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let profile):
+                print("Profile fetched successfully:")
+                print("Username: \(profile.username)")
+                print("Name: \(profile.name)")
+                print("Login Name: \(profile.loginName)")
+                print("Bio: \(profile.bio ?? "No bio available")")
+                
+                fetchProfileImageURL(username: profile.username)
+                
+                self.switchRootViewController(to: self.tabBarControllerIdentifier)
+                
+            case .failure(let error):
+                print("Failed to fetch profile with error: \(error.localizedDescription)")
+                break
             }
-            viewController.delegate = self
-        } else {
-            super.prepare(for: segue, sender: sender)
         }
+        
+    }
+    
+    private func fetchProfileImageURL(username: String) {
+        profileImageService.fetchProfileImageURL(username: username) { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let profileImage):
+                print("Profile image fetched successfully:")
+                print("Image url: \(profileImage)")
+                
+                self.switchRootViewController(to: self.tabBarControllerIdentifier)
+                
+            case .failure(let error):
+                print("Failed to fetch profile with error: \(error.localizedDescription)")
+                break
+            }
+        }
+        
     }
 }

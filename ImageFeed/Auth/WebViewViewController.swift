@@ -23,6 +23,7 @@ final class WebViewViewController: UIViewController {
     private enum WebViewConstants {
         static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
     }
+    private var estimatedProgressObservation: NSKeyValueObservation?
     
     // MARK: - Overrides Methods
     override func viewDidLoad() {
@@ -30,12 +31,14 @@ final class WebViewViewController: UIViewController {
         
         webView.navigationDelegate = self
         loadAuthView()
-    
-        webView.addObserver(
-            self,
-            forKeyPath: #keyPath(WKWebView.estimatedProgress),
-            options: .new,
-            context: nil)
+        
+        estimatedProgressObservation = webView.observe(
+            \.estimatedProgress,
+             options: [],
+             changeHandler: { [weak self] _, _ in
+                 guard let self = self else { return }
+                 self.updateProgress()
+             })
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -44,9 +47,8 @@ final class WebViewViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        webView.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), context: nil)
     }
-
+    
     override func observeValue(
         forKeyPath keyPath: String?,
         of object: Any?,
@@ -109,7 +111,6 @@ extension WebViewViewController: WKNavigationDelegate {
         } else {
             decisionHandler(.allow)
         }
-        print("Navigation action: \(navigationAction.request.url?.absoluteString ?? "no url")") // Отладочный вывод
     }
 }
 
