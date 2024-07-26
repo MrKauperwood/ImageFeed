@@ -11,61 +11,63 @@ final class OAuth2Service {
     
     // MARK: - Public Properties
     static let shared  = OAuth2Service()
+    enum AuthServiceError: Error {
+        case invalidRequest
+    }
+    
+    // MARK: - Private Properties
+    private let urlSession  = URLSession.shared
+    private var task: URLSessionTask?
+    private var lastCode: String?
+    
     
     // MARK: - Initializers
     private init() {}
     
     // MARK: - Public Methods
     func fetchOAuthToken(code : String, completion: @escaping (Result<String, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        
+        if task != nil {
+            if lastCode != code {
+                task?.cancel()
+            } else {
+                completion(.failure(AuthServiceError.invalidRequest))
+                return
+            }
+        } else {
+            if lastCode == code {
+                completion(.failure(AuthServiceError.invalidRequest))
+                return
+            }
+        }
+        lastCode = code
         
         guard let request = makeTokenRequest(with: code) else {
-            let error = NSError(domain: "OAuth2", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid access token request"])
-            print("Error: \(error.localizedDescription)")
-            completion(.failure(error))
+            completion(.failure(AuthServiceError.invalidRequest))
             return
         }
         
-        print("Fetching OAuth token with request: \(request)")
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                DispatchQueue.main.async {
-                    print("Network error: \(error.localizedDescription)")
-                    completion(.failure(error))
+        task = urlSession.objectTask(for: request, isSnakeCaseConvertNeeded: true) {[weak self] (result: Result<OAuthTokenResponseBody, Error>) in
+            DispatchQueue.main.async {
+                defer {
+                    self?.task = nil
+                    self?.lastCode = nil
                 }
-                return
-            }
-            
-            guard let data = data,
-                  let httpResponse = response as? HTTPURLResponse,
-                  (200..<300).contains(httpResponse.statusCode) else {
-                let error = NSError(domain: "OAuth2", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid get access token response"])
-                DispatchQueue.main.async {
-                    print("Service error: \(error.localizedDescription)")
-                    completion(.failure(error))
-                }
-                return
-            }
-            
-            do {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                let responseBody = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                DispatchQueue.main.async {
+                
+                switch result {
+                case .success(let responseBody):
                     print("Successfully received token: \(responseBody.accessToken)")
                     completion(.success(responseBody.accessToken))
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    print("Decoding error: \(error.localizedDescription)")
+                case .failure(let error):
+                    print("OAuth2Service: Network or decoding error: \(error.localizedDescription)")
                     completion(.failure(error))
                 }
             }
         }
         
-        task.resume()
+        task?.resume()
         print("Token request task started")
-        
     }
     
     // MARK: - Private Methods
@@ -91,6 +93,5 @@ final class OAuth2Service {
         print("Token request created: \(request)")
         
         return request
-        
     }
 }

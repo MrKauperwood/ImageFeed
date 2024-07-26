@@ -7,15 +7,23 @@
 
 import Foundation
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
-    private let profileImage = UIImage(named: "Photo")
+    // MARK: - Private Properties
+    private let profileService = ProfileService.shared
+    
+    private let profileImage = UIImage()
+    
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = profileImage
+        imageView.layer.cornerRadius = 35
+        imageView.layer.masksToBounds = true
         imageView.tintColor = .gray
         return imageView
     }()
@@ -43,6 +51,8 @@ final class ProfileViewController: UIViewController {
         label.text = "Hello, world!"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .ypWhite
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
         label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         return label
     }()
@@ -57,7 +67,30 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .ypBlack
+        
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        
+        if let profile = profileService.profile {
+            updateUserInfo(usingDataFrom: profile)
+        }
+        
         setupUI()
+        setUpCacheSettings()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateAvatar()
     }
     
     private func setupUI() {
@@ -84,7 +117,7 @@ final class ProfileViewController: UIViewController {
         view.addSubview(descriptionLabel)
         NSLayoutConstraint.activate([
             descriptionLabel.topAnchor.constraint(equalTo: nickNameLabel.bottomAnchor, constant: 8),
-            descriptionLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor)
+            descriptionLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),            descriptionLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16)
         ])
         
         view.addSubview(button)
@@ -94,6 +127,50 @@ final class ProfileViewController: UIViewController {
             button.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -24),
             button.centerYAnchor.constraint(equalTo: imageView.centerYAnchor)
         ])
+    }
+    
+    private func updateUserInfo(usingDataFrom profile : ProfileService.Profile) {
+        userNameLabel.text = profile.name
+        nickNameLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio
+    }
+    
+    private func setUpCacheSettings() {
+        let cache = ImageCache.default
+        cache.memoryStorage.config.totalCostLimit = 300 * 1024 * 1024
+        cache.memoryStorage.config.countLimit = 150
+        cache.diskStorage.config.sizeLimit = 1000 * 1000 * 1000
+        cache.memoryStorage.config.expiration = .seconds(600)
+        cache.diskStorage.config.expiration = .never
+        cache.memoryStorage.config.cleanInterval = 30
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.userImage?.profile_image.small,
+            let url = URL(string: profileImageURL)
+        else { return }
+        
+        let processor = DownsamplingImageProcessor(size: imageView.bounds.size)
+                     |> RoundCornerImageProcessor(cornerRadius: 20)
+
+        imageView.kf.indicatorType = .activity
+        
+        
+        imageView.kf.setImage(with: url,
+                              placeholder: UIImage(named: "EllipseBlur"),
+                              options: [
+                                .processor(processor)
+                              ]) { result in
+                                  switch result {
+                                  case .success(let value):
+                                      print(value.image)
+                                      print(value.cacheType)
+                                      print(value.source)
+                                  case .failure(let error):
+                                      print(error)
+                                  }
+                              }
     }
     
     @objc private func buttonTapped() {
