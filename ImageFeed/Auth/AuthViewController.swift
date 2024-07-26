@@ -55,20 +55,23 @@ extension AuthViewController: WebViewViewControllerDelegate {
         print("Delegate method called with code: \(code)")
         UIBlockingProgressHUD.show()
         
-        oauth2Service.fetchOAuthToken(code: code) {[unowned self] result in
-            switch result {
-            case .success(let token):
-                print("Token received: \(token)")
-                self.tokenStorage.saveTokenInStorage(token: token)
-                UIBlockingProgressHUD.dismiss()
-                self.delegate?.didAuthenticate(self)
-                
-            case .failure(let error):
-                print("Failed to fetch token: \(error)")
-                UIBlockingProgressHUD.dismiss()
-                print("Dismissing loader")
-                self.navigationController?.showAlert(title: "Что-то пошло не так(", message: "Не удалось войти в систему")
-                print("Showing alert")
+        oauth2Service.fetchOAuthToken(code: code) {[weak self] result in
+            guard let self = self else { return }
+                switch result {
+                case .success(let token):
+                    print("Token received: \(token)")
+                    self.tokenStorage.saveTokenInStorage(token: token)
+                    UIBlockingProgressHUD.dismiss()
+                    self.delegate?.didAuthenticate(self)
+                    
+                case .failure(let error):
+                    print("Failed to fetch token: \(error)")
+                    UIBlockingProgressHUD.dismiss()
+                    print("Dismissing loader")
+                    DispatchQueue.main.async {
+                        self.showAlert(title: "Что-то пошло не так(", message: "Не удалось войти в систему")
+                    }
+                    print("Showing alert")
             }
         }
         
@@ -81,11 +84,9 @@ extension AuthViewController: WebViewViewControllerDelegate {
 
 extension UIViewController {
     func showAlert(title: String, message: String) {
-        DispatchQueue.main.async {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
             alert.addAction(action)
             self.present(alert, animated: true, completion: nil)
-        }
     }
 }

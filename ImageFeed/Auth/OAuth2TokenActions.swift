@@ -12,11 +12,11 @@ final class OAuth2TokenActions {
     // MARK: - Private Properties
     private let tokenKey = "AuthToken"
     
-    public func getTokenFromStorage() -> String? {
+    func getTokenFromStorage() -> String? {
         return KeychainWrapper.standard.string(forKey: tokenKey)
     }
     
-    public func saveTokenInStorage(token: String) {
+    func saveTokenInStorage(token: String) {
         let isSuccess = KeychainWrapper.standard.set(
             token,
             forKey: tokenKey,
@@ -27,7 +27,7 @@ final class OAuth2TokenActions {
         }
     }
     
-    public func removeTokenFromStorage() {
+    func removeTokenFromStorage() {
         let isSuccess = KeychainWrapper.standard.removeObject(forKey: tokenKey)
         guard isSuccess else {
             print("Failed to remove the token from the keychain")

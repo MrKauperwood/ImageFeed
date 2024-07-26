@@ -44,10 +44,13 @@ final class SplashViewController: UIViewController {
             fetchProfile(token)
         } else {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let authViewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as! AuthViewController
-            authViewController.delegate = self
-            authViewController.modalPresentationStyle = .fullScreen
-            self.present(authViewController, animated: true, completion: nil)
+            if let authViewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController {
+                authViewController.delegate = self
+                authViewController.modalPresentationStyle = .fullScreen
+                self.present(authViewController, animated: true, completion: nil)
+            } else {
+                assertionFailure("AuthViewController could not be instantiated")
+            }
         }
         
         
@@ -63,14 +66,17 @@ final class SplashViewController: UIViewController {
         let viewController: UIViewController
         if identifier == authViewForAuthControllerIdentifier {
             let storyboard = UIStoryboard(name: "Main", bundle: .main)
-            let navigationController = storyboard.instantiateViewController(withIdentifier: authViewForAuthControllerIdentifier) as! UINavigationController
-            if let authViewController = navigationController.viewControllers.first as? AuthViewController {
-                authViewController.delegate = self
+            if let navigationController = storyboard.instantiateViewController(withIdentifier: authViewForAuthControllerIdentifier) as? UINavigationController {
+                if let authViewController = navigationController.viewControllers.first as? AuthViewController {
+                    authViewController.delegate = self
+                }
+                viewController = navigationController
+            } else {
+                assertionFailure("NavigationController with identifier \(authViewForAuthControllerIdentifier) could not be instantiated")
+                return
             }
-            viewController = navigationController
         } else {
-            viewController = UIStoryboard(name: "Main", bundle: .main)
-                .instantiateViewController(withIdentifier: identifier)
+            viewController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(withIdentifier: identifier)
         }
         
         window.rootViewController = viewController
