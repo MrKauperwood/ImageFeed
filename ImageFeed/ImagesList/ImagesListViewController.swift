@@ -14,13 +14,16 @@ final class ImagesListViewController: UIViewController {
     
     // MARK: - Private Properties
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    private let photosName: [String] = Array(0..<20).map{"\($0)"}
+    private var photosName: [String] = []
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ru_RU")
         formatter.dateFormat = "d MMMM yyyy"
         return formatter
     }()
+    private let storage = OAuth2TokenActions()
+    
+    let imageListService = ImagesListService()
     
     // MARK: - Overrides Methods
     override func viewDidLoad() {
@@ -29,8 +32,27 @@ final class ImagesListViewController: UIViewController {
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
         tableView.delegate = self
         tableView.dataSource = self
+        
+        // Инициализация photosName
+        photosName = imageListService.photos.map { "\($0)" }
+        
+        // Подписка на уведомление
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(photosDidChange),
+            name: ImagesListService.didChangeNotification,
+            object: nil
+        )
+        
+        // Инициация первой загрузки фотографий
+//        initiateFirstLoad()
     }
     
+    @objc private func photosDidChange() {
+        photosName = imageListService.photos.map { "\($0)" }
+        tableView.reloadData()
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showSingleImageSegueIdentifier {
             guard
@@ -79,6 +101,59 @@ extension ImagesListViewController: UITableViewDelegate {
         let cellHeight = imageHeight * scale + imageInsets.top + imageInsets.bottom
         
         return cellHeight
+    }
+    
+    func tableView(
+        _ tableView: UITableView,
+        willDisplay cell: UITableViewCell,
+        forRowAt indexPath: IndexPath
+    ) {
+        // Проверяем, если ли ячейка последняя
+        if indexPath.row + 1 == photosName.count {
+            
+            guard let token = storage.getTokenFromStorage() else {
+                print("Failed to retrieve token")
+                return // Прерываем выполнение, если нет токена
+            }
+            
+//            // Убедимся, что нет активного запроса
+//            if imageListService.task == nil {
+//                imageListService.fetchPhotosNextPage(token: token) { [weak self] result in
+//                    switch result {
+//                    case .success(let message):
+//                        print("Success: \(message)")
+//                        // Обновляем данные таблицы
+//                        DispatchQueue.main.async {
+//                            self?.tableView.reloadData()
+//                        }
+//                    case .failure(let error):
+//                        print("Error: \(error.localizedDescription)")
+//                    }
+//                }
+//            } else {
+//                print("Request is already in progress, skipping new fetch")
+//            }
+        }
+        print("Привет")
+    }
+    
+    private func initiateFirstLoad() {
+        guard let token = storage.getTokenFromStorage() else {
+            print("Failed to retrieve token")
+            return
+        }
+
+        imageListService.fetchPhotosNextPage(token: token) { [weak self] result in
+            switch result {
+            case .success(let message):
+                print("Success: \(message)")
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
+            case .failure(let error):
+                print("Error: \(error.localizedDescription)")
+            }
+        }
     }
 }
 

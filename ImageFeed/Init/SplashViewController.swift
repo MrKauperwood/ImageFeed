@@ -15,6 +15,8 @@ final class SplashViewController: UIViewController {
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
     
+    private let imagesListService = ImagesListService()
+    
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthScreen"
     private let tabBarControllerIdentifier = "TabBarViewController"
     private let authViewForAuthControllerIdentifier = "NavigationViewForAuthController"
