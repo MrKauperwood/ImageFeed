@@ -107,15 +107,24 @@ final class ImagesListViewController: UIViewController {
             }
             
             let photo = photos[indexPath.row]
-            let image = UIImage(named: photo.thumbImageURL)
+            print("А это юрл для фото \(photo.largeImageURL)")
             
-            if image == nil {
-                print("Image is nil for \(photo.thumbImageURL)")
+            // Загружаем изображение с помощью Kingfisher
+            if let url = URL(string: photo.largeImageURL) {
+                viewController.imageView.kf.setImage(with: url) { result in
+                    switch result {
+                    case .success(let value):
+                        print("Image \(photo.largeImageURL) loaded successfully")
+                        viewController.image = value.image
+                    case .failure(let error):
+                        print("Image loading error: \(error.localizedDescription)")
+                        viewController.image = nil
+                    }
+                }
             } else {
-                print("Image \(photo.thumbImageURL) loaded successfully")
+                print("Invalid URL: \(photo.largeImageURL)")
+                viewController.image = nil
             }
-            
-            viewController.image = image
         }
         else {
             super.prepare(for: segue, sender: sender)
