@@ -16,4 +16,12 @@ final class ImagesListCell: UITableViewCell {
     
     // MARK: - Public Properties
     static let reuseIdentifier = "ImagesListCell"
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        // Отменяем загрузку изображения
+        cellImage.kf.cancelDownloadTask()
+        cellImage.image = nil
+    }
 }
