@@ -14,6 +14,7 @@ final class SingleImageViewController: UIViewController {
             updateImageView()
         }
     }
+    var imageUrl: String? // Свойство для хранения URL изображения
     
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet var imageView: UIImageView!
@@ -24,6 +25,23 @@ final class SingleImageViewController: UIViewController {
         scrollView.delegate = self
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
+        
+        // Загружаем изображение после того, как view загружен
+        if let imageUrl = imageUrl, let url = URL(string: imageUrl) {
+            
+            // Установка индикатора активности
+            imageView.kf.indicatorType = .activity
+            
+            
+            imageView.kf.setImage(with: url) { result in
+                switch result {
+                case .success(let value):
+                    self.image = value.image
+                case .failure(let error):
+                    print("Image loading error: \(error.localizedDescription)")
+                }
+            }
+        }
         
         if let image = image {
             updateImageView()

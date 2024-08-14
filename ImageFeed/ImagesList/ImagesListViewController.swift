@@ -73,13 +73,14 @@ final class ImagesListViewController: UIViewController {
     func updateTableViewAnimated() {
         guard !imageListService.photos.isEmpty else { return }
         
-        photos = imageListService.photos
-        
         let oldCount = photos.count
         let newCount = imageListService.photos.count
-        photos = imageListService.photos
+        
         if oldCount != newCount {
             tableView.performBatchUpdates {
+                // Обновляем массив photos только внутри performBatchUpdates
+                photos = imageListService.photos
+                
                 let indexPaths = (oldCount..<newCount).map { i in
                     IndexPath(row: i, section: 0)
                 }
@@ -87,8 +88,13 @@ final class ImagesListViewController: UIViewController {
             } completion: { success in
                 if !success {
                     // Если анимация не удалась, перезагружаем таблицу
+                    self.photos = self.imageListService.photos
                     self.tableView.reloadData()
-                }}
+                }
+            }
+        } else {
+            // Если количество фото не изменилось, просто обновляем массив photos
+            photos = imageListService.photos
         }
     }
     
@@ -107,26 +113,8 @@ final class ImagesListViewController: UIViewController {
             }
             
             let photo = photos[indexPath.row]
-            print("А это юрл для фото \(photo.largeImageURL)")
-            
-            // Загружаем изображение с помощью Kingfisher
-            if let url = URL(string: photo.largeImageURL) {
-                viewController.imageView.kf.setImage(with: url) { result in
-                    switch result {
-                    case .success(let value):
-                        print("Image \(photo.largeImageURL) loaded successfully")
-                        viewController.image = value.image
-                    case .failure(let error):
-                        print("Image loading error: \(error.localizedDescription)")
-                        viewController.image = nil
-                    }
-                }
-            } else {
-                print("Invalid URL: \(photo.largeImageURL)")
-                viewController.image = nil
-            }
-        }
-        else {
+            viewController.imageUrl = photo.largeImageURL
+        } else {
             super.prepare(for: segue, sender: sender)
         }
     }
@@ -140,21 +128,7 @@ extension ImagesListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        //        guard let image = UIImage(named: photosName[indexPath.row]) else {
-        //            return 0
-        //        }
-        //
-        //        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-        //
-        //        let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
-        //        let imageWidth = image.size.width
-        //        let imageHeight = image.size.height
-        //
-        //        let scale = imageViewWidth / imageWidth
-        //        let cellHeight = imageHeight * scale + imageInsets.top + imageInsets.bottom
         return UITableView.automaticDimension
-        
-        //        return cellHeight
     }
     
     func tableView(
@@ -183,8 +157,6 @@ extension ImagesListViewController: UITableViewDelegate {
                         switch result {
                         case .success(let message):
                             print("Success: \(message)")
-                            // Обновляем данные таблицы
-                            self.tableView.reloadData()
                         case .failure(let error):
                             print("Error: \(error.localizedDescription)")
                         }
@@ -221,7 +193,7 @@ extension ImagesListViewController: UITableViewDelegate {
                 switch result {
                 case .success(let message):
                     print("Success: \(message)")
-                    self.tableView.reloadData()
+//                    self.tableView.reloadData()
                 case .failure(let error):
                     print("Error: \(error.localizedDescription)")
                 }
@@ -251,9 +223,8 @@ extension ImagesListViewController: UITableViewDataSource {
     }
 }
 
-extension ImagesListViewController{
+extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        
         let photo = photos[indexPath.row]
         
         // Устанавливаем заглушку на время загрузки
@@ -269,9 +240,8 @@ extension ImagesListViewController{
             cell.cellImage.kf.setImage(with: url, placeholder: placeholderImage, options: nil, completionHandler:  { [weak self] result in
                 switch result {
                 case .success(_):
-                    // Обновляем высоту ячейки после загрузки изображения
-                    self?.tableView.beginUpdates()
-                    self?.tableView.endUpdates()
+                    // Обновляем конкретную ячейку после загрузки изображения
+                    self?.tableView.reloadRows(at: [indexPath], with: .automatic)
                 case .failure(let error):
                     print("Image loading error: \(error)")
                 }
@@ -289,5 +259,4 @@ extension ImagesListViewController{
         let likeImage = photo.isLiked ? UIImage(named: "ActiveLike") : UIImage(named: "NotActiveLike")
         cell.likeButton.setImage(likeImage, for: .normal)
     }
-    
 }
