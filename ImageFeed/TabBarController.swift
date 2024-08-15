@@ -7,9 +7,9 @@
 
 import UIKit
 import Foundation
- 
-final class TabBarController: UITabBarController {
 
+final class TabBarController: UITabBarController {
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
@@ -20,7 +20,7 @@ final class TabBarController: UITabBarController {
             title: "",
             image: UIImage(named: "tab_editorial_active"),
             selectedImage: nil)
-    
+        
         let profileViewController = ProfileViewController()
         profileViewController.tabBarItem = UITabBarItem(
             title: "",

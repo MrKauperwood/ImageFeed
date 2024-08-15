@@ -118,18 +118,14 @@ extension SplashViewController : AuthViewControllerDelegate {
             
             switch result {
             case .success(let profile):
-                print("Profile fetched successfully:")
-                print("Username: \(profile.username)")
-                print("Name: \(profile.name)")
-                print("Login Name: \(profile.loginName)")
-                print("Bio: \(profile.bio ?? "No bio available")")
-                
+                Logger.logMessage("Profile fetched successfully", for: self, level: .info)
+            
                 fetchProfileImageURL(username: profile.username)
                 
                 self.switchRootViewController(to: self.tabBarControllerIdentifier)
                 
             case .failure(let error):
-                print("Failed to fetch profile with error: \(error.localizedDescription)")
+                Logger.logMessage("Failed to fetch profile with error: \(error.localizedDescription)", for: self, level: .error)
                 break
             }
         }
@@ -142,16 +138,14 @@ extension SplashViewController : AuthViewControllerDelegate {
             
             switch result {
             case .success(let profileImage):
-                print("Profile image fetched successfully:")
-                print("Image url: \(profileImage)")
+                Logger.logMessage("Profile image fetched successfully", for: self, level: .info)
                 
                 self.switchRootViewController(to: self.tabBarControllerIdentifier)
                 
             case .failure(let error):
-                print("Failed to fetch profile with error: \(error.localizedDescription)")
+                Logger.logMessage("Failed to fetch profile with error: \(error.localizedDescription)", for: self, level: .error)
                 break
             }
         }
-        
     }
 }

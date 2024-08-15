@@ -153,8 +153,8 @@ final class ProfileViewController: UIViewController {
         else { return }
         
         let processor = DownsamplingImageProcessor(size: imageView.bounds.size)
-                     |> RoundCornerImageProcessor(cornerRadius: 20)
-
+        |> RoundCornerImageProcessor(cornerRadius: 20)
+        
         imageView.kf.indicatorType = .activity
         
         
@@ -186,9 +186,9 @@ final class ProfileViewController: UIViewController {
         guard let window = UIApplication.shared.windows.first else {
             return
         }
-
+        
         let splashViewController = SplashViewController()
-
+        
         // Анимация перехода
         let options: UIView.AnimationOptions = .transitionCrossDissolve
         UIView.transition(with: window, duration: 0.5, options: options, animations: {

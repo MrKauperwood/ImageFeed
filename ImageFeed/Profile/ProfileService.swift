@@ -86,7 +86,7 @@ final class ProfileService {
                 
                 switch result {
                 case .success(let response):
-                    print("Successfully received profile info for user with username: \(response.username)")
+                    print("[ProfileService] - Successfully received profile info for user with username: \(response.username)")
                     let profile = Profile(from: response)
                     self?.profile = profile
                     completion(.success(profile))
@@ -98,7 +98,7 @@ final class ProfileService {
         }
         
         task?.resume()
-        print("Get user info request task started")
+        print("[ProfileService] Get user info request task started")
         
     }
     
@@ -113,7 +113,7 @@ final class ProfileService {
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
-        print("Get user info request created: \(request)")
+        print("[ProfileService] Get user info request created: \(request)")
         return request
         
     }

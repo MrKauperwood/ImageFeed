@@ -49,7 +49,6 @@ final class ImagesListViewController: UIViewController {
         initiateFirstLoadIfNeeded {
             self.hideLoadingIndicator()
         }
-        print("Check")
     }
     
     private func showLoadingIndicator() {
@@ -63,9 +62,7 @@ final class ImagesListViewController: UIViewController {
         activityIndicator.removeFromSuperview()
     }
     
-    
     @objc private func photosDidChange() {
-        print("photosDidChange called")
         updateTableViewAnimated()
     }
     
@@ -77,7 +74,6 @@ final class ImagesListViewController: UIViewController {
         
         if oldCount != newCount {
             tableView.performBatchUpdates {
-                // Обновляем массив photos только внутри performBatchUpdates
                 photos = imageListService.photos
                 
                 let indexPaths = (oldCount..<newCount).map { i in
@@ -92,7 +88,7 @@ final class ImagesListViewController: UIViewController {
                 }
             }
         } else {
-            // Если количество фото не изменилось, просто обновляем массив photos
+            // Если количество фото не изменилось, обновляем массив photos
             photos = imageListService.photos
         }
     }
@@ -135,12 +131,12 @@ extension ImagesListViewController: UITableViewDelegate {
         willDisplay cell: UITableViewCell,
         forRowAt indexPath: IndexPath
     ) {
-        // Проверяем, если ли ячейка последняя
+        // Проверяем, последняя ли ячейка
         if indexPath.row + 1 == photos.count && !isLoadingNewPhotos {
             
             guard let token = storage.getTokenFromStorage() else {
                 print("Failed to retrieve token")
-                return // Прерываем выполнение, если нет токена
+                return
             }
             
             isLoadingNewPhotos = true
@@ -165,7 +161,6 @@ extension ImagesListViewController: UITableViewDelegate {
                 print("Request is already in progress, skipping new fetch")
             }
         }
-        print("Готовим ячейку")
     }
     
     private func initiateFirstLoadIfNeeded(completion: @escaping () -> Void) {
@@ -192,13 +187,11 @@ extension ImagesListViewController: UITableViewDelegate {
                 switch result {
                 case .success(let message):
                     print("Success: \(message)")
-                    //                    self.tableView.reloadData()
                 case .failure(let error):
                     print("Error: \(error.localizedDescription)")
                 }
                 completion()
             }
-            
         }
     }
     
@@ -227,13 +220,10 @@ extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         let photo = photos[indexPath.row]
         
-        // Устанавливаем заглушку на время загрузки
         let placeholderImage = UIImage(named: "RectangleBlur")
         
-        // Устанавливаем тип индикатора активности
         cell.cellImage.kf.indicatorType = .activity
         
-        // Загружаем изображение с использованием Kingfisher
         if let url = URL(string: photo.smallImageURL) {
             cell.cellImage.kf.setImage(with: url, placeholder: placeholderImage, options: nil, completionHandler:  { [weak self] result in
                 switch result {
@@ -248,12 +238,10 @@ extension ImagesListViewController {
             cell.cellImage.image = placeholderImage
         }
         
-        // Устанавливаем дату создания
         if let createdAt = photo.createdAt {
             cell.dateLabel.text = dateFormatter.string(from: createdAt)
         }
         
-        // Устанавливаем состояние кнопки "лайк"
         let likeImage = photo.isLiked ? UIImage(named: "ActiveLike") : UIImage(named: "NotActiveLike")
         cell.likeButton.setImage(likeImage, for: .normal)
         
@@ -293,16 +281,12 @@ extension ImagesListViewController: ImagesListCellDelegate {
 
 extension ImagesListViewController {
     
-    // Метод для отображения ошибки с использованием UIAlertController
     func showErrorAlert(error: Error) {
-        // Создаем UIAlertController с заголовком "Ошибка" и сообщением, содержащим описание ошибки
         let alertController = UIAlertController(title: "Ошибка", message: error.localizedDescription, preferredStyle: .alert)
         
-        // Добавляем действие "OK", чтобы пользователь мог закрыть алерт
         let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
         alertController.addAction(okAction)
         
-        // Показываем UIAlertController на главном потоке
         DispatchQueue.main.async {
             self.present(alertController, animated: true, completion: nil)
         }

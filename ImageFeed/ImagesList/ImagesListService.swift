@@ -83,7 +83,7 @@ class ImagesListService {
             }
             
             task?.resume()
-            print("Get photos request task started")
+            print("[ImagesListService] Get photos request task started")
             
             
         }
@@ -129,18 +129,18 @@ class ImagesListService {
     private func updateLikeButton(photoId: String) {
         if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
             // Текущий элемент
-           let photo = self.photos[index]
-           // Копия элемента с инвертированным значением isLiked.
-           let newPhoto = Photo(
-                    id: photo.id,
-                    size: photo.size,
-                    createdAt: photo.createdAt,
-                    welcomeDescription: photo.welcomeDescription,
-                    thumbImageURL: photo.thumbImageURL,
-                    smallImageURL: photo.smallImageURL,
-                    largeImageURL: photo.largeImageURL,
-                    isLiked: !photo.isLiked
-                )
+            let photo = self.photos[index]
+            // Копия элемента с инвертированным значением isLiked.
+            let newPhoto = Photo(
+                id: photo.id,
+                size: photo.size,
+                createdAt: photo.createdAt,
+                welcomeDescription: photo.welcomeDescription,
+                thumbImageURL: photo.thumbImageURL,
+                smallImageURL: photo.smallImageURL,
+                largeImageURL: photo.largeImageURL,
+                isLiked: !photo.isLiked
+            )
             // Заменяем элемент в массиве.
             self.photos[index] = newPhoto
         }
@@ -161,7 +161,7 @@ class ImagesListService {
             ]
             
             guard let url = urlComponents?.url else {
-                print("Failed to create get photos URL from components")
+                print("[ImagesListService] Failed to create get photos URL from components")
                 return nil
             }
             
@@ -169,7 +169,7 @@ class ImagesListService {
             request.httpMethod = "GET"
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             
-            print("Get photos request created: \(request)")
+            print("[ImagesListService] Get photos request created: \(request)\n")
             
             return request
         }
@@ -200,7 +200,6 @@ class ImagesListService {
             
         }
     
-    // Добавляем метод для очистки фотографий
     func clearImagesList() {
         photos.removeAll()
         lastLoadedPage = 0 // Сбрасываем номер страницы, чтобы начать заново

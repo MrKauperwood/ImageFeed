@@ -25,7 +25,7 @@ final class SingleImageViewController: UIViewController {
         scrollView.delegate = self
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
-
+        
         UIBlockingProgressHUD.show()
         
         // Загружаем изображение после того, как view загружен
@@ -98,7 +98,7 @@ final class SingleImageViewController: UIViewController {
         
         present(alert, animated: true, completion: nil)
     }
-
+    
     private func retryLoadingImage() {
         guard let imageUrl = imageUrl, let url = URL(string: imageUrl) else { return }
         

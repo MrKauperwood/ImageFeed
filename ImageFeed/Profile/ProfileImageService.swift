@@ -59,7 +59,7 @@ final class ProfileImageService {
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
-    
+        
         task = urlSession.objectTask(for: request, isSnakeCaseConvertNeeded: false) {[weak self] (result: Result<UserResult, Error>) in
             DispatchQueue.main.async {
                 defer {
@@ -81,7 +81,7 @@ final class ProfileImageService {
         
         
         task?.resume()
-        print("Get user info request task started")
+        print("[ProfileImageService] Get user info request task started")
     }
     
     // MARK: - Private Methods
@@ -95,7 +95,7 @@ final class ProfileImageService {
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
-        print("Get user info request created: \(request)")
+        print("[ProfileImageService] Get user info request created: \(request)")
         return request
         
     }

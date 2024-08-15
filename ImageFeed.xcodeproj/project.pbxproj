@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		F018F46D2C3B1959004EC349 /* OAuth2TokenActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F018F46C2C3B1959004EC349 /* OAuth2TokenActions.swift */; };
 		F0192D7D2C33665400DD57F8 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0192D7C2C33665400DD57F8 /* Constants.swift */; };
+		F020E8692C6E43B30021D555 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F020E8682C6E43B30021D555 /* Logger.swift */; };
 		F02CA7842C40303500E1AABD /* OAuthTokenResponseBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02CA7832C40303500E1AABD /* OAuthTokenResponseBody.swift */; };
 		F02FCEA82C46CD7300DAA8C5 /* UIBlockingProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02FCEA72C46CD7300DAA8C5 /* UIBlockingProgressHUD.swift */; };
 		F02FCEAA2C47FE8300DAA8C5 /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02FCEA92C47FE8300DAA8C5 /* ProfileService.swift */; };
@@ -61,6 +62,7 @@
 /* Begin PBXFileReference section */
 		F018F46C2C3B1959004EC349 /* OAuth2TokenActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth2TokenActions.swift; sourceTree = "<group>"; };
 		F0192D7C2C33665400DD57F8 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		F020E8682C6E43B30021D555 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		F02CA7832C40303500E1AABD /* OAuthTokenResponseBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthTokenResponseBody.swift; sourceTree = "<group>"; };
 		F02FCEA72C46CD7300DAA8C5 /* UIBlockingProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBlockingProgressHUD.swift; sourceTree = "<group>"; };
 		F02FCEA92C47FE8300DAA8C5 /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				F052F42A2C4A84D600099112 /* URLSession+Extensions.swift */,
+				F020E8682C6E43B30021D555 /* Logger.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -389,6 +392,7 @@
 				F0A64CFE2C6CEA36008AFA84 /* ProfileLogoutService.swift in Sources */,
 				F02FCEA82C46CD7300DAA8C5 /* UIBlockingProgressHUD.swift in Sources */,
 				F0CFEE672C590A2000B5AAEE /* ImagesListService.swift in Sources */,
+				F020E8692C6E43B30021D555 /* Logger.swift in Sources */,
 				F0716F2A2BD975DD001560CD /* ImagesListViewController.swift in Sources */,
 				F0716F302BD975DD001560CD /* ImageFeed.xcdatamodeld in Sources */,
 				F0A9A87B2C3C930800B9CF08 /* SplashViewController.swift in Sources */,
