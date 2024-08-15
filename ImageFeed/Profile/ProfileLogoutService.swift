@@ -15,12 +15,11 @@ final class ProfileLogoutService {
     private init() { }
     
     func logout() {
-        removeTokenFromKeychain()
-        
         cleanCookies()
         cleanProfileData()
         cleanProfileImage()
         cleanImagesList()
+        removeTokenFromKeychain()
     }
     
     private func cleanCookies() {

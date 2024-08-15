@@ -186,15 +186,13 @@ final class ProfileViewController: UIViewController {
         guard let window = UIApplication.shared.windows.first else {
             return
         }
-        
-        // Переход на контроллер входа в систему
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let authViewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController")
-        window.rootViewController = authViewController
-        window.makeKeyAndVisible()
-        
+
+        let splashViewController = SplashViewController()
+
         // Анимация перехода
         let options: UIView.AnimationOptions = .transitionCrossDissolve
-        UIView.transition(with: window, duration: 0.5, options: options, animations: {}, completion: nil)
+        UIView.transition(with: window, duration: 0.5, options: options, animations: {
+            window.rootViewController = splashViewController
+        }, completion: nil)
     }
 }
