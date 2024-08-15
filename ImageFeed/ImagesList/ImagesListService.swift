@@ -19,6 +19,8 @@ class ImagesListService {
     private let urlSession = URLSession.shared
     
     var task: URLSessionTask?
+    var changeLikeTask: URLSessionTask?
+    
     enum SortingType: String {
         case latest
         case oldest
@@ -88,7 +90,62 @@ class ImagesListService {
         
     }
     
+    
+    func changeLike(photoId: String, isLike: Bool, token: String, _ completion: @escaping (Result<Void, Error>) -> Void) {
+        // Отменяем предыдущую задачу, если она еще выполняется
+        changeLikeTask?.cancel()
+        
+        assert(Thread.isMainThread)
+        
+        defer {
+            self.task = nil
+        }
+        
+        guard let request = makeChangeLikeRequest(forPhotoWithId: photoId, isLike: isLike, token: token) else {
+            completion(.failure(AuthServiceError.invalidRequest))
+            return
+        }
+        
+        changeLikeTask = urlSession.dataTask(with: request) { data, response, error in
+            defer {
+                self.changeLikeTask = nil
+            }
+            
+            if let error = error {
+                print("Failed to like/unlike photos: \(error)")
+                completion(.failure(error))
+            } else {
+                print("Successfully liked/unliked photo")
+                self.updateLikeButton(photoId: photoId)
+                completion(.success(()))
+            }
+        }
+        
+        changeLikeTask?.resume()
+        print("Like/Unlike request task started")
+    }
+    
     // MARK: - Private Methods
+    private func updateLikeButton(photoId: String) {
+        if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
+            // Текущий элемент
+           let photo = self.photos[index]
+           // Копия элемента с инвертированным значением isLiked.
+           let newPhoto = Photo(
+                    id: photo.id,
+                    size: photo.size,
+                    createdAt: photo.createdAt,
+                    welcomeDescription: photo.welcomeDescription,
+                    thumbImageURL: photo.thumbImageURL,
+                    smallImageURL: photo.smallImageURL,
+                    largeImageURL: photo.largeImageURL,
+                    isLiked: !photo.isLiked
+                )
+            // Заменяем элемент в массиве.
+            self.photos[index] = newPhoto
+        }
+    }
+    
     private func makeGetPhotosRequest(
         forPage page: Int,
         per_page: Int,
@@ -113,7 +170,41 @@ class ImagesListService {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             
             print("Get photos request created: \(request)")
+            
             return request
         }
+    
+    private func makeChangeLikeRequest(
+        forPhotoWithId photoId: String,
+        isLike: Bool,
+        token: String) -> URLRequest? {
+            
+            var urlComponents = URLComponents(string: Constants.getChangeLikePhotoURL(for: photoId).absoluteString)
+            guard let url = urlComponents?.url else {
+                print("Failed to create change like for photo URL from components")
+                return nil
+            }
+            var request = URLRequest(url: url)
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            
+            if isLike{
+                request.httpMethod = "POST"
+                print("Like photo request created: \(request)")
+                
+            } else {
+                request.httpMethod = "DELETE"
+                print("Unlike photo request created: \(request)")
+            }
+            
+            return request
+            
+        }
+    
+    // Добавляем метод для очистки фотографий
+    func clearImagesList() {
+        photos.removeAll()
+        lastLoadedPage = 0 // Сбрасываем номер страницы, чтобы начать заново
+        print("Images list cleared")
+    }
     
 }

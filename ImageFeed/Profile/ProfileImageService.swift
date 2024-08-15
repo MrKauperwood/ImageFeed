@@ -31,11 +31,16 @@ final class ProfileImageService {
     
     struct ImageUrls: Codable {
         let small : String
+        let medium : String
     }
     
     enum AuthServiceError: Error {
         case invalidRequest
         case tokenIsNil
+    }
+    
+    func clearUserImage() {
+        self.userImage = nil
     }
     
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {

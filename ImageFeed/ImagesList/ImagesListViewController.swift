@@ -15,7 +15,6 @@ final class ImagesListViewController: UIViewController {
     // MARK: - Private Properties
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let activityIndicator = UIActivityIndicatorView(style: .large)
-    //    private var photosName: [String] = []
     private var photos: [Photo] = []
     private var isLoadingNewPhotos = false
     
@@ -193,7 +192,7 @@ extension ImagesListViewController: UITableViewDelegate {
                 switch result {
                 case .success(let message):
                     print("Success: \(message)")
-//                    self.tableView.reloadData()
+                    //                    self.tableView.reloadData()
                 case .failure(let error):
                     print("Error: \(error.localizedDescription)")
                 }
@@ -218,6 +217,7 @@ extension ImagesListViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
+        imageListCell.delegate = self
         configCell(for: imageListCell, with: indexPath)
         return imageListCell
     }
@@ -233,10 +233,8 @@ extension ImagesListViewController {
         // Устанавливаем тип индикатора активности
         cell.cellImage.kf.indicatorType = .activity
         
-        print("Loading image from URL: \(photo.thumbImageURL)")
-        
         // Загружаем изображение с использованием Kingfisher
-        if let url = URL(string: photo.thumbImageURL) {
+        if let url = URL(string: photo.smallImageURL) {
             cell.cellImage.kf.setImage(with: url, placeholder: placeholderImage, options: nil, completionHandler:  { [weak self] result in
                 switch result {
                 case .success(_):
@@ -258,5 +256,56 @@ extension ImagesListViewController {
         // Устанавливаем состояние кнопки "лайк"
         let likeImage = photo.isLiked ? UIImage(named: "ActiveLike") : UIImage(named: "NotActiveLike")
         cell.likeButton.setImage(likeImage, for: .normal)
+        
     }
 }
+
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        
+        DispatchQueue.main.async {
+            UIBlockingProgressHUD.show()
+        }
+        
+        guard let token = self.storage.getTokenFromStorage() else {
+            print("Failed to retrieve token")
+            return
+        }
+        
+        imageListService.changeLike(photoId: photo.id, isLike: !photo.isLiked, token: token) { [weak self] result in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    self.photos = self.imageListService.photos
+                    cell.setIsLiked(self.photos[indexPath.row].isLiked)
+                case .failure(let error):
+                    self.showErrorAlert(error: error)
+                }
+                UIBlockingProgressHUD.dismiss()
+            }
+        }
+    }
+}
+
+extension ImagesListViewController {
+    
+    // Метод для отображения ошибки с использованием UIAlertController
+    func showErrorAlert(error: Error) {
+        // Создаем UIAlertController с заголовком "Ошибка" и сообщением, содержащим описание ошибки
+        let alertController = UIAlertController(title: "Ошибка", message: error.localizedDescription, preferredStyle: .alert)
+        
+        // Добавляем действие "OK", чтобы пользователь мог закрыть алерт
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        
+        // Показываем UIAlertController на главном потоке
+        DispatchQueue.main.async {
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
+}
+

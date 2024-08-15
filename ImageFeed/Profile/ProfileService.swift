@@ -118,5 +118,9 @@ final class ProfileService {
         
     }
     
+    func clearProfile() {
+        self.profile = nil
+    }
+    
 }
 

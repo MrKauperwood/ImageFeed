@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import Kingfisher
+import ProgressHUD
 
 final class ProfileViewController: UIViewController {
     
@@ -30,7 +31,7 @@ final class ProfileViewController: UIViewController {
     
     private lazy var userNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Екатерина Новикова"
+        label.text = "Алексей Бонд"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .ypWhite
         label.font = UIFont.systemFont(ofSize: 23, weight: .bold)
@@ -39,7 +40,7 @@ final class ProfileViewController: UIViewController {
     
     private lazy var nickNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "@ekaterina_nov"
+        label.text = "@lexabond"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .ypGrey
         label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
@@ -147,7 +148,7 @@ final class ProfileViewController: UIViewController {
     
     private func updateAvatar() {
         guard
-            let profileImageURL = ProfileImageService.shared.userImage?.profile_image.small,
+            let profileImageURL = ProfileImageService.shared.userImage?.profile_image.medium,
             let url = URL(string: profileImageURL)
         else { return }
         
@@ -175,5 +176,25 @@ final class ProfileViewController: UIViewController {
     
     @objc private func buttonTapped() {
         print("Button was tapped")
+        UIBlockingProgressHUD.show()
+        ProfileLogoutService.shared.logout()
+        ProgressHUD.dismiss()
+        navigateToLoginScreen()
+    }
+    
+    private func navigateToLoginScreen() {
+        guard let window = UIApplication.shared.windows.first else {
+            return
+        }
+        
+        // Переход на контроллер входа в систему
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let authViewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController")
+        window.rootViewController = authViewController
+        window.makeKeyAndVisible()
+        
+        // Анимация перехода
+        let options: UIView.AnimationOptions = .transitionCrossDissolve
+        UIView.transition(with: window, duration: 0.5, options: options, animations: {}, completion: nil)
     }
 }

@@ -34,4 +34,8 @@ final class OAuth2TokenActions {
             return
         }
     }
+    
+    func getTokenKey() -> String {
+        return self.tokenKey
+    }
 }
