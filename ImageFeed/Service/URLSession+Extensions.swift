@@ -7,6 +7,8 @@
 
 import Foundation
 
+// MARK: - NetworkError
+
 enum NetworkError: Error {
     case invalidURL
     case httpStatusCode(Int)
@@ -14,7 +16,12 @@ enum NetworkError: Error {
     case urlSessionError
 }
 
+// MARK: - URLSession Extension
+
 extension URLSession {
+
+    // MARK: - Public Methods
+    
     func objectTask<T: Decodable>(
         for request: URLRequest,
         isSnakeCaseConvertNeeded: Bool,
@@ -39,10 +46,7 @@ extension URLSession {
         }
         return task
     }
-}
 
-
-extension URLSession {
     func data(
         for request: URLRequest,
         completion: @escaping (Result<Data, Error>) -> Void
@@ -77,6 +81,3 @@ extension URLSession {
         return task
     }
 }
-
-
-

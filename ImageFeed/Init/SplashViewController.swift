@@ -8,13 +8,15 @@
 import Foundation
 import UIKit
 
+// MARK: - SplashViewController
+
 final class SplashViewController: UIViewController {
-    
+
     // MARK: - Private Properties
+    
     private let storage = OAuth2TokenActions()
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
-    
     private let imagesListService = ImagesListService()
     
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthScreen"
@@ -22,6 +24,7 @@ final class SplashViewController: UIViewController {
     private let authViewForAuthControllerIdentifier = "NavigationViewForAuthController"
     
     // MARK: - UI Elements
+    
     private let splashImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "Logo_of_Unsplash"))
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -29,13 +32,13 @@ final class SplashViewController: UIViewController {
     }()
     
     // MARK: - Overrides Methods
+    
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
     }
     
@@ -45,20 +48,21 @@ final class SplashViewController: UIViewController {
         if let token = storage.getTokenFromStorage() {
             fetchProfile(token)
         } else {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            if let authViewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController {
-                authViewController.delegate = self
-                authViewController.modalPresentationStyle = .fullScreen
-                self.present(authViewController, animated: true, completion: nil)
-            } else {
-                assertionFailure("AuthViewController could not be instantiated")
-            }
+            presentAuthViewController()
         }
-        
-        
     }
     
     // MARK: - Private Methods
+    
+    private func setupUI() {
+        view.addSubview(splashImageView)
+        
+        NSLayoutConstraint.activate([
+            splashImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            splashImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
     private func switchRootViewController(to identifier: String) {
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid window configuration")
@@ -85,28 +89,16 @@ final class SplashViewController: UIViewController {
         window.makeKeyAndVisible()
     }
     
-    private func setupUI() {
-        view.addSubview(splashImageView)
-        
-        NSLayoutConstraint.activate([
-            splashImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            splashImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
-    }
-    
-}
-
-extension SplashViewController : AuthViewControllerDelegate {
-    func didAuthenticate(_ vc: AuthViewController) {
-        vc.dismiss(animated: true)
-        
-        guard let token = storage.getTokenFromStorage() else {
-            return
+    private func presentAuthViewController() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let authViewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController {
+            authViewController.delegate = self
+            authViewController.modalPresentationStyle = .fullScreen
+            self.present(authViewController, animated: true, completion: nil)
+        } else {
+            assertionFailure("AuthViewController could not be instantiated")
         }
-        
-        fetchProfile(token)
     }
-    
     
     private func fetchProfile(_ token: String) {
         UIBlockingProgressHUD.show()
@@ -119,9 +111,7 @@ extension SplashViewController : AuthViewControllerDelegate {
             switch result {
             case .success(let profile):
                 Logger.logMessage("Profile fetched successfully", for: self, level: .info)
-            
                 fetchProfileImageURL(username: profile.username)
-                
                 self.switchRootViewController(to: self.tabBarControllerIdentifier)
                 
             case .failure(let error):
@@ -129,7 +119,6 @@ extension SplashViewController : AuthViewControllerDelegate {
                 break
             }
         }
-        
     }
     
     private func fetchProfileImageURL(username: String) {
@@ -139,7 +128,6 @@ extension SplashViewController : AuthViewControllerDelegate {
             switch result {
             case .success(let profileImage):
                 Logger.logMessage("Profile image fetched successfully", for: self, level: .info)
-                
                 self.switchRootViewController(to: self.tabBarControllerIdentifier)
                 
             case .failure(let error):
@@ -147,5 +135,19 @@ extension SplashViewController : AuthViewControllerDelegate {
                 break
             }
         }
+    }
+}
+
+// MARK: - AuthViewControllerDelegate
+
+extension SplashViewController : AuthViewControllerDelegate {
+    func didAuthenticate(_ vc: AuthViewController) {
+        vc.dismiss(animated: true)
+        
+        guard let token = storage.getTokenFromStorage() else {
+            return
+        }
+        
+        fetchProfile(token)
     }
 }
