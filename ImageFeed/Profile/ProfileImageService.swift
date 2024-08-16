@@ -72,7 +72,7 @@ final class ProfileImageService {
                     self?.userImage = response
                     completion(.success(imageUrl))
                 case .failure(let error):
-                    print("ProfileImageService: Network or decoding error: \(error.localizedDescription)")
+                    Logger.logMessage("ProfileImageService: Network or decoding error: \(error.localizedDescription)", for: "ProfileImageService", level: .error)
                     completion(.failure(error))
                 }
             }

@@ -15,7 +15,12 @@ class Logger {
     }
 
     static func logMessage(_ message: String, for object: Any, level: LogLevel = .info) {
-        let className = String(describing: type(of: object))
+        let className: String
+        if let stringObject = object as? String {
+            className = stringObject
+        } else {
+            className = String(describing: type(of: object))
+        }
         let formattedMessage = "[\(level.rawValue)] [\(className)] - \(message)"
         print(formattedMessage)
     }

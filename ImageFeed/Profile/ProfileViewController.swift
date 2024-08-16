@@ -165,11 +165,9 @@ final class ProfileViewController: UIViewController {
                               ]) { result in
                                   switch result {
                                   case .success(let value):
-                                      print(value.image)
-                                      print(value.cacheType)
-                                      print(value.source)
+                                      Logger.logMessage("Image loaded successfully", for: self, level: .info)
                                   case .failure(let error):
-                                      print(error)
+                                      Logger.logMessage("Image loading error: \(error.localizedDescription)", for: self, level: .error)
                                   }
                               }
     }

@@ -86,12 +86,12 @@ final class ProfileService {
                 
                 switch result {
                 case .success(let response):
-                    Logger.logMessage("Successfully received profile info for user with username: \(response.username)", for: self, level: .info)
+                    Logger.logMessage("Successfully received profile info for user with username: \(response.username)", for: "ProfileService", level: .info)
                     let profile = Profile(from: response)
                     self?.profile = profile
                     completion(.success(profile))
                 case .failure(let error):
-                    Logger.logMessage("Network or decoding error: \(error.localizedDescription)", for: self, level: .error)
+                    Logger.logMessage("Network or decoding error: \(error.localizedDescription)", for: "ProfileService", level: .error)
                     completion(.failure(error))
                 }
             }

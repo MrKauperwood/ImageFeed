@@ -28,6 +28,12 @@ final class SingleImageViewController: UIViewController {
         
         UIBlockingProgressHUD.show()
         
+        // Установка фона
+        view.backgroundColor = .ypBlack
+        
+        // Добавляем логотип на задний план
+        addBackgroundLogo()
+        
         // Загружаем изображение после того, как view загружен
         if let imageUrl = imageUrl, let url = URL(string: imageUrl) {
             
@@ -70,6 +76,23 @@ final class SingleImageViewController: UIViewController {
         let x = (newContentSize.width - visibleRectSize.width) / 2
         let y = (newContentSize.height - visibleRectSize.height) / 2
         scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
+    }
+    
+    // Функция для создания и добавления логотипа на задний план
+    private func addBackgroundLogo() {
+        let logoImageView = UIImageView(image: UIImage(named: "ScribbleLogo"))
+        logoImageView.contentMode = .scaleAspectFit
+        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(logoImageView)
+        view.sendSubviewToBack(logoImageView)
+
+        NSLayoutConstraint.activate([
+            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            logoImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5),
+            logoImageView.heightAnchor.constraint(equalTo: logoImageView.widthAnchor)
+        ])
     }
     
     //MARK: - Actions

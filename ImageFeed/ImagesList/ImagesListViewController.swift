@@ -231,7 +231,7 @@ extension ImagesListViewController {
                     // Обновляем конкретную ячейку после загрузки изображения
                     self?.tableView.reloadRows(at: [indexPath], with: .automatic)
                 case .failure(let error):
-                    Logger.logMessage("Image loading error: \(error)", for: self, level: .error)
+                    Logger.logMessage("Image loading error: \(error)", for: "ImagesListViewController", level: .error)
                 }
             })
         } else {

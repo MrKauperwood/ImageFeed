@@ -57,10 +57,10 @@ final class OAuth2Service {
                 
                 switch result {
                 case .success(let responseBody):
-                    Logger.logMessage("Successfully received token: \(responseBody.accessToken)", for: self, level: .info)
+                    Logger.logMessage("Successfully received token: \(responseBody.accessToken)", for: "OAuth2Service", level: .info)
                     completion(.success(responseBody.accessToken))
                 case .failure(let error):
-                    Logger.logMessage("OAuth2Service: Network or decoding error: \(error.localizedDescription)", for: self, level: .error)
+                    Logger.logMessage("OAuth2Service: Network or decoding error: \(error.localizedDescription)", for: "OAuth2Service", level: .error)
                     completion(.failure(error))
                 }
             }
