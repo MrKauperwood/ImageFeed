@@ -192,6 +192,8 @@ final class ProfileViewController: UIViewController {
         let options: UIView.AnimationOptions = .transitionCrossDissolve
         UIView.transition(with: window, duration: 0.5, options: options, animations: {
             window.rootViewController = splashViewController
+            window.makeKeyAndVisible()
+            window.isUserInteractionEnabled = true
         }, completion: nil)
     }
 }

@@ -253,12 +253,19 @@ extension ImagesListViewController: ImagesListCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let photo = photos[indexPath.row]
         
-        DispatchQueue.main.async {
-            UIBlockingProgressHUD.show()
-        }
+        // Добавляем вибрацию при нажатии на лайк
+        let feedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+        feedbackGenerator.impactOccurred()
+        
+        // Анимация лайка
+        animateLikeButton(cell.likeButton, isLiked: !photo.isLiked)
+        
+        // Блокируем взаимодействие с интерфейсом
+        self.view.isUserInteractionEnabled = false
         
         guard let token = self.storage.getTokenFromStorage() else {
             Logger.logMessage("Failed to retrieve token", for: self, level: .error)
+            self.view.isUserInteractionEnabled = true // Разблокируем интерфейс в случае ошибки
             return
         }
         
@@ -266,6 +273,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
             guard let self = self else { return }
             
             DispatchQueue.main.async {
+                self.view.isUserInteractionEnabled = true // Разблокируем интерфейс
                 switch result {
                 case .success:
                     self.photos = self.imageListService.photos
@@ -273,10 +281,28 @@ extension ImagesListViewController: ImagesListCellDelegate {
                 case .failure(let error):
                     self.showErrorAlert(error: error)
                 }
-                UIBlockingProgressHUD.dismiss()
             }
         }
     }
+}
+
+private func animateLikeButton(_ button: UIButton, isLiked: Bool) {
+    // Устанавливаем начальное состояние кнопки (например, масштаб 1.3)
+    button.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+    
+    // Обновляем изображение кнопки сразу перед началом анимации
+    let likeImage = isLiked ? UIImage(named: "ActiveLike") : UIImage(named: "NotActiveLike")
+    button.setImage(likeImage, for: .normal)
+    
+    // Анимация уменьшения обратно до нормального размера
+    UIView.animate(withDuration: 0.3,
+                   delay: 0,
+                   usingSpringWithDamping: 0.5,
+                   initialSpringVelocity: 0.5,
+                   options: .curveEaseInOut,
+                   animations: {
+                    button.transform = CGAffineTransform.identity
+                   }, completion: nil)
 }
 
 extension ImagesListViewController {
