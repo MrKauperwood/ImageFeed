@@ -90,8 +90,8 @@ final class SingleImageViewController: UIViewController {
         NSLayoutConstraint.activate([
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             logoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            logoImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5),
-            logoImageView.heightAnchor.constraint(equalTo: logoImageView.widthAnchor)
+            logoImageView.widthAnchor.constraint(equalToConstant: 83),
+            logoImageView.heightAnchor.constraint(equalToConstant: 75)
         ])
     }
     

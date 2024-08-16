@@ -60,7 +60,7 @@ final class ProfileViewController: UIViewController {
     
     private lazy var button: UIButton = {
         let buttonImage = UIImage(systemName: "ipad.and.arrow.forward")
-        let button = UIButton.systemButton(with: buttonImage!, target: self, action: #selector(buttonTapped))
+        let button = UIButton.systemButton(with: buttonImage!, target: self, action: #selector(logOutButtonTapped))
         button.translatesAutoresizingMaskIntoConstraints = false
         button.tintColor = .ypRed
         return button
@@ -172,11 +172,8 @@ final class ProfileViewController: UIViewController {
                               }
     }
     
-    @objc private func buttonTapped() {
-        UIBlockingProgressHUD.show()
-        ProfileLogoutService.shared.logout()
-        ProgressHUD.dismiss()
-        navigateToLoginScreen()
+    @objc private func logOutButtonTapped() {
+        showConfirmationAlert()
     }
     
     private func navigateToLoginScreen() {
@@ -194,4 +191,30 @@ final class ProfileViewController: UIViewController {
             window.isUserInteractionEnabled = true
         }, completion: nil)
     }
+}
+
+extension ProfileViewController {
+    
+    private func showConfirmationAlert() {
+        let alertController = UIAlertController(title: "Пока, пока!", message: "Уверены, что хотите выйти?", preferredStyle: .alert)
+        
+        let yesAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            self?.performLogout()
+        }
+        let noAction = UIAlertAction(title: "Нет", style: .default, handler: nil)
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
+        
+        DispatchQueue.main.async {
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
+    
+    private func performLogout() {
+        UIBlockingProgressHUD.show()
+        ProfileLogoutService.shared.logout()
+        ProgressHUD.dismiss()
+        navigateToLoginScreen()
+    }
+
 }
