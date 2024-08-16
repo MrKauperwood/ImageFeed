@@ -175,7 +175,6 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc private func buttonTapped() {
-        print("Button was tapped")
         UIBlockingProgressHUD.show()
         ProfileLogoutService.shared.logout()
         ProgressHUD.dismiss()

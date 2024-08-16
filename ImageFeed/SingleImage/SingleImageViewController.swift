@@ -38,7 +38,7 @@ final class SingleImageViewController: UIViewController {
                 case .success(let value):
                     self.image = value.image
                 case .failure(let error):
-                    print("Image loading error: \(error.localizedDescription)")
+                    Logger.logMessage("Image loading error: \(error.localizedDescription)", for: self, level: .error)
                 }
             }
         }

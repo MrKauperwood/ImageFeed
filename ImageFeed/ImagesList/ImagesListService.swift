@@ -78,12 +78,12 @@ class ImagesListService {
                 }
                 
             case .failure(let error):
-                print("Failed to load photos: \(error)")
+                Logger.logMessage("Failed to load photos: \(error)", for: self, level: .error)
                 completion(.failure(error))
             }
             
             task?.resume()
-            print("[ImagesListService] Get photos request task started")
+            Logger.logMessage("Get photos request task started", for: self, level: .info)
             
             
         }
@@ -112,17 +112,17 @@ class ImagesListService {
             }
             
             if let error = error {
-                print("Failed to like/unlike photos: \(error)")
+                Logger.logMessage("Failed to like/unlike photos: \(error)", for: self, level: .error)
                 completion(.failure(error))
             } else {
-                print("Successfully liked/unliked photo")
+                Logger.logMessage("Successfully liked/unliked photo", for: self, level: .info)
                 self.updateLikeButton(photoId: photoId)
                 completion(.success(()))
             }
         }
         
         changeLikeTask?.resume()
-        print("Like/Unlike request task started")
+        Logger.logMessage("Like/Unlike request task started", for: self, level: .info)
     }
     
     // MARK: - Private Methods
@@ -161,7 +161,7 @@ class ImagesListService {
             ]
             
             guard let url = urlComponents?.url else {
-                print("[ImagesListService] Failed to create get photos URL from components")
+                Logger.logMessage("Failed to create get photos URL from components", for: self, level: .error)
                 return nil
             }
             
@@ -169,7 +169,7 @@ class ImagesListService {
             request.httpMethod = "GET"
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             
-            print("[ImagesListService] Get photos request created: \(request)\n")
+            Logger.logMessage("Get photos request created: \(request)", for: self, level: .info)
             
             return request
         }
@@ -181,7 +181,7 @@ class ImagesListService {
             
             var urlComponents = URLComponents(string: Constants.getChangeLikePhotoURL(for: photoId).absoluteString)
             guard let url = urlComponents?.url else {
-                print("Failed to create change like for photo URL from components")
+                Logger.logMessage("Failed to create change like for photo URL from components", for: self, level: .error)
                 return nil
             }
             var request = URLRequest(url: url)
@@ -189,11 +189,11 @@ class ImagesListService {
             
             if isLike{
                 request.httpMethod = "POST"
-                print("Like photo request created: \(request)")
+                Logger.logMessage("Like photo request created: \(request)", for: self, level: .info)
                 
             } else {
                 request.httpMethod = "DELETE"
-                print("Unlike photo request created: \(request)")
+                Logger.logMessage("Unlike photo request created: \(request)", for: self, level: .info)
             }
             
             return request
@@ -203,7 +203,7 @@ class ImagesListService {
     func clearImagesList() {
         photos.removeAll()
         lastLoadedPage = 0 // Сбрасываем номер страницы, чтобы начать заново
-        print("Images list cleared")
+        Logger.logMessage("Images list cleared", for: self, level: .info)
     }
     
 }

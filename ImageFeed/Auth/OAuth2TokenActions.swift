@@ -22,7 +22,7 @@ final class OAuth2TokenActions {
             forKey: tokenKey,
             withAccessibility: .whenPasscodeSetThisDeviceOnly)
         guard isSuccess else {
-            print("Failed to save the token to the keychain")
+            Logger.logMessage("Failed to save the token to the keychain", for: self, level: .error)
             return
         }
     }
@@ -30,7 +30,7 @@ final class OAuth2TokenActions {
     func removeTokenFromStorage() {
         let isSuccess = KeychainWrapper.standard.removeObject(forKey: tokenKey)
         guard isSuccess else {
-            print("Failed to remove the token from the keychain")
+            Logger.logMessage("Failed to remove the token from the keychain", for: self, level: .error)
             return
         }
     }

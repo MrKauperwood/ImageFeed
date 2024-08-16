@@ -86,19 +86,19 @@ final class ProfileService {
                 
                 switch result {
                 case .success(let response):
-                    print("[ProfileService] - Successfully received profile info for user with username: \(response.username)")
+                    Logger.logMessage("Successfully received profile info for user with username: \(response.username)", for: self, level: .info)
                     let profile = Profile(from: response)
                     self?.profile = profile
                     completion(.success(profile))
                 case .failure(let error):
-                    print("ProfileService: Network or decoding error: \(error.localizedDescription)")
+                    Logger.logMessage("Network or decoding error: \(error.localizedDescription)", for: self, level: .error)
                     completion(.failure(error))
                 }
             }
         }
         
         task?.resume()
-        print("[ProfileService] Get user info request task started")
+        Logger.logMessage("Get user info request task started", for: self, level: .info)
         
     }
     
@@ -113,7 +113,7 @@ final class ProfileService {
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
-        print("[ProfileService] Get user info request created: \(request)")
+        Logger.logMessage("Get user info request created: \(request)", for: self, level: .info)
         return request
         
     }

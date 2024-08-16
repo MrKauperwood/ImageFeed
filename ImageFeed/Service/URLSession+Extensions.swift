@@ -61,14 +61,14 @@ extension URLSession {
                 if 200 ..< 300 ~= statusCode {
                     fulfillCompletionOnTheMainThread(.success(data))
                 } else {
-                    print("[dataTask]: NetworkError - \(statusCode)")
+                    Logger.logMessage("NetworkError - \(statusCode)", for: self, level: .error)
                     fulfillCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
                 }
             } else if let error = error {
-                print("[dataTask]: NetworkError - \(error.localizedDescription)")
+                Logger.logMessage("NetworkError - \(error.localizedDescription)", for: self, level: .error)
                 fulfillCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error)))
             } else {
-                print("[dataTask]: NetworkError - Unknown error")
+                Logger.logMessage("NetworkError - Unknown error", for: self, level: .error)
                 fulfillCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
             }
         })

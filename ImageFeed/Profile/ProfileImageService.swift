@@ -69,7 +69,6 @@ final class ProfileImageService {
                 switch result {
                 case .success(let response):
                     let imageUrl = response.profile_image.small
-                    print("Successfully received public profile info with image url: \(imageUrl)")
                     self?.userImage = response
                     completion(.success(imageUrl))
                 case .failure(let error):
@@ -81,7 +80,7 @@ final class ProfileImageService {
         
         
         task?.resume()
-        print("[ProfileImageService] Get user info request task started")
+        Logger.logMessage("Get user info request task started", for: self, level: .info)
     }
     
     // MARK: - Private Methods
@@ -95,7 +94,7 @@ final class ProfileImageService {
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
-        print("[ProfileImageService] Get user info request created: \(request)")
+        Logger.logMessage("Get user info request created: \(request)", for: self, level: .info)
         return request
         
     }

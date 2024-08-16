@@ -117,7 +117,7 @@ final class ImagesListViewController: UIViewController {
 
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Selected row at indexPath: \(indexPath.row)")
+        Logger.logMessage("Selected row at indexPath: \(indexPath.row)", for: self, level: .info)
         performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
         
     }
@@ -135,7 +135,7 @@ extension ImagesListViewController: UITableViewDelegate {
         if indexPath.row + 1 == photos.count && !isLoadingNewPhotos {
             
             guard let token = storage.getTokenFromStorage() else {
-                print("Failed to retrieve token")
+                Logger.logMessage("Failed to retrieve token", for: self, level: .error)
                 return
             }
             
@@ -151,14 +151,14 @@ extension ImagesListViewController: UITableViewDelegate {
                         
                         switch result {
                         case .success(let message):
-                            print("Success: \(message)")
+                            Logger.logMessage("Success: \(message)", for: self, level: .info)
                         case .failure(let error):
-                            print("Error: \(error.localizedDescription)")
+                            Logger.logMessage("Error: \(error.localizedDescription)", for: self, level: .error)
                         }
                     }
                 }
             } else {
-                print("Request is already in progress, skipping new fetch")
+                Logger.logMessage("Request is already in progress, skipping new fetch", for: self, level: .warning)
             }
         }
     }
@@ -174,7 +174,7 @@ extension ImagesListViewController: UITableViewDelegate {
         isLoadingNewPhotos = true
         
         guard let token = storage.getTokenFromStorage() else {
-            print("Failed to retrieve token")
+            Logger.logMessage("Failed to retrieve token", for: self, level: .error)
             completion()
             return
         }
@@ -186,9 +186,9 @@ extension ImagesListViewController: UITableViewDelegate {
                 self.hideLoadingIndicator()
                 switch result {
                 case .success(let message):
-                    print("Success: \(message)")
+                    Logger.logMessage("Success: \(message)", for: self, level: .info)
                 case .failure(let error):
-                    print("Error: \(error.localizedDescription)")
+                    Logger.logMessage("Error: \(error.localizedDescription)", for: self, level: .error)
                 }
                 completion()
             }
@@ -231,7 +231,7 @@ extension ImagesListViewController {
                     // Обновляем конкретную ячейку после загрузки изображения
                     self?.tableView.reloadRows(at: [indexPath], with: .automatic)
                 case .failure(let error):
-                    print("Image loading error: \(error)")
+                    Logger.logMessage("Image loading error: \(error)", for: self, level: .error)
                 }
             })
         } else {
@@ -258,7 +258,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
         }
         
         guard let token = self.storage.getTokenFromStorage() else {
-            print("Failed to retrieve token")
+            Logger.logMessage("Failed to retrieve token", for: self, level: .error)
             return
         }
         

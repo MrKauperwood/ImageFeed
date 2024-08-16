@@ -91,12 +91,12 @@ final class WebViewViewController: UIViewController {
 extension WebViewViewController: WKNavigationDelegate {
     private func code(from navigationAction: WKNavigationAction) -> String? {
         if let url = navigationAction.request.url {
-            print("Navigating to URL: \(url.absoluteString)")
+            Logger.logMessage("Navigating to URL: \(url.absoluteString)", for: self, level: .info)
             if let urlComponent = URLComponents(string: url.absoluteString),
                urlComponent.path == "/oauth/authorize/native",
                let items = urlComponent.queryItems,
                let codeItem = items.first(where: { $0.name == "code" }) {
-                print("Authorization code item: \(codeItem)") // Отладочный вывод
+                Logger.logMessage("Authorization code item: \(codeItem)", for: self, level: .info)
                 return codeItem.value
             }
         }
@@ -105,7 +105,7 @@ extension WebViewViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         if let code = code(from: navigationAction) {
-            print("Authorization code received: \(code)")
+            Logger.logMessage("Authorization code received: \(code)", for: self, level: .info)
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
             decisionHandler(.cancel)
         } else {

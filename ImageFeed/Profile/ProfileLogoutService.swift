@@ -33,18 +33,18 @@ final class ProfileLogoutService {
     
     private func cleanProfileData() {
         ProfileService.shared.clearProfile()
-        print("Profile data cleared")
+        Logger.logMessage("Profile data cleared", for: self, level: .info)
     }
     
     private func cleanProfileImage() {
         ProfileImageService.shared.clearUserImage()
-        print("Profile image cleared")
+        Logger.logMessage("Profile image cleared", for: self, level: .info)
     }
     
     private func cleanImagesList() {
         let imagesListService = ImagesListService()
         imagesListService.clearImagesList()
-        print("Images list cleared")
+        Logger.logMessage("Images list cleared", for: self, level: .info)
     }
     
     private func removeTokenFromKeychain() {
@@ -53,7 +53,7 @@ final class ProfileLogoutService {
         
         let keychainWrapper = KeychainWrapper.standard
         keychainWrapper.removeObject(forKey: tokenKey)
-        print("Token removed from Keychain")
+        Logger.logMessage("Token removed from Keychain", for: self, level: .info)
     }
 }
 
