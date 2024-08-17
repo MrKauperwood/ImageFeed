@@ -7,14 +7,14 @@
 
 import Foundation
 
-class ImagesListService {
+final class ImagesListService {
     
     // MARK: - Public Properties
     static let didChangeNotification = Notification.Name("ImagesListServiceDidChange")
     private(set) var photos: [Photo] = []
     
     // MARK: - Private Properties
-    private var lastLoadedPage = 0
+    private var lastLoadedPage = -1
     private let amountPerPage = 10
     private let urlSession = URLSession.shared
     
@@ -112,17 +112,17 @@ class ImagesListService {
             }
             
             if let error = error {
-                Logger.logMessage("Failed to like/unlike photos: \(error)", for: self, level: .error)
+                Logger.logMessage("Failed to \(isLike ? "Like" : "Unlike") photos: \(error)", for: self, level: .error)
                 completion(.failure(error))
             } else {
-                Logger.logMessage("Successfully liked/unliked photo", for: self, level: .info)
+                Logger.logMessage("Successfully \(isLike ? "Liked" : "Unliked") photo", for: self, level: .info)
                 self.updateLikeButton(photoId: photoId)
                 completion(.success(()))
             }
         }
         
         changeLikeTask?.resume()
-        Logger.logMessage("Like/Unlike request task started", for: self, level: .info)
+        Logger.logMessage("\(isLike ? "Like" : "Unlike") request task started", for: self, level: .info)
     }
     
     // MARK: - Private Methods
@@ -179,7 +179,7 @@ class ImagesListService {
         isLike: Bool,
         token: String) -> URLRequest? {
             
-            var urlComponents = URLComponents(string: Constants.getChangeLikePhotoURL(for: photoId).absoluteString)
+            let urlComponents = URLComponents(string: Constants.getChangeLikePhotoURL(for: photoId).absoluteString)
             guard let url = urlComponents?.url else {
                 Logger.logMessage("Failed to create change like for photo URL from components", for: self, level: .error)
                 return nil
@@ -187,14 +187,10 @@ class ImagesListService {
             var request = URLRequest(url: url)
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             
-            if isLike{
-                request.httpMethod = "POST"
-                Logger.logMessage("Like photo request created: \(request)", for: self, level: .info)
-                
-            } else {
-                request.httpMethod = "DELETE"
-                Logger.logMessage("Unlike photo request created: \(request)", for: self, level: .info)
-            }
+            request.httpMethod = isLike ? "POST" : "DELETE"
+            Logger.logMessage("\(isLike ? "Like" : "Unlike") photo request created: \(request)",
+                                          for: self,
+                                          level: .info)
             
             return request
             

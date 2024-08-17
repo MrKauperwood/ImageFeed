@@ -240,6 +240,8 @@ extension ImagesListViewController {
         
         if let createdAt = photo.createdAt {
             cell.dateLabel.text = dateFormatter.string(from: createdAt)
+        } else {
+            cell.dateLabel.text = ""
         }
         
         let likeImage = photo.isLiked ? UIImage(named: "ActiveLike") : UIImage(named: "NotActiveLike")

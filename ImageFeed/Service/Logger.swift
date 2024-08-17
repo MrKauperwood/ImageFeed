@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Logger
 
-class Logger {
+final class Logger {
 
     // MARK: - LogLevel Enum
     

@@ -153,7 +153,7 @@ final class ProfileViewController: UIViewController {
         else { return }
         
         let processor = DownsamplingImageProcessor(size: imageView.bounds.size)
-        |> RoundCornerImageProcessor(cornerRadius: 20)
+            |> RoundCornerImageProcessor(cornerRadius: imageView.bounds.size.width / 10)
         
         imageView.kf.indicatorType = .activity
         
