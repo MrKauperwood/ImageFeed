@@ -7,6 +7,8 @@
 
 import Foundation
 
+// MARK: - NetworkError
+
 enum NetworkError: Error {
     case invalidURL
     case httpStatusCode(Int)
@@ -14,7 +16,12 @@ enum NetworkError: Error {
     case urlSessionError
 }
 
+// MARK: - URLSession Extension
+
 extension URLSession {
+
+    // MARK: - Public Methods
+    
     func objectTask<T: Decodable>(
         for request: URLRequest,
         isSnakeCaseConvertNeeded: Bool,
@@ -39,10 +46,7 @@ extension URLSession {
         }
         return task
     }
-}
 
-
-extension URLSession {
     func data(
         for request: URLRequest,
         completion: @escaping (Result<Data, Error>) -> Void
@@ -61,14 +65,14 @@ extension URLSession {
                 if 200 ..< 300 ~= statusCode {
                     fulfillCompletionOnTheMainThread(.success(data))
                 } else {
-                    print("[dataTask]: NetworkError - \(statusCode)")
+                    Logger.logMessage("NetworkError - \(statusCode)", for: self, level: .error)
                     fulfillCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
                 }
             } else if let error = error {
-                print("[dataTask]: NetworkError - \(error.localizedDescription)")
+                Logger.logMessage("NetworkError - \(error.localizedDescription)", for: self, level: .error)
                 fulfillCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error)))
             } else {
-                print("[dataTask]: NetworkError - Unknown error")
+                Logger.logMessage("NetworkError - Unknown error", for: self, level: .error)
                 fulfillCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
             }
         })
@@ -77,6 +81,3 @@ extension URLSession {
         return task
     }
 }
-
-
-

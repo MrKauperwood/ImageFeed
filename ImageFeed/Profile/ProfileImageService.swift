@@ -31,11 +31,16 @@ final class ProfileImageService {
     
     struct ImageUrls: Codable {
         let small : String
+        let medium : String
     }
     
     enum AuthServiceError: Error {
         case invalidRequest
         case tokenIsNil
+    }
+    
+    func clearUserImage() {
+        self.userImage = nil
     }
     
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
@@ -54,7 +59,7 @@ final class ProfileImageService {
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
-    
+        
         task = urlSession.objectTask(for: request, isSnakeCaseConvertNeeded: false) {[weak self] (result: Result<UserResult, Error>) in
             DispatchQueue.main.async {
                 defer {
@@ -64,11 +69,10 @@ final class ProfileImageService {
                 switch result {
                 case .success(let response):
                     let imageUrl = response.profile_image.small
-                    print("Successfully received public profile info with image url: \(imageUrl)")
                     self?.userImage = response
                     completion(.success(imageUrl))
                 case .failure(let error):
-                    print("ProfileImageService: Network or decoding error: \(error.localizedDescription)")
+                    Logger.logMessage("ProfileImageService: Network or decoding error: \(error.localizedDescription)", for: "ProfileImageService", level: .error)
                     completion(.failure(error))
                 }
             }
@@ -76,7 +80,7 @@ final class ProfileImageService {
         
         
         task?.resume()
-        print("Get user info request task started")
+        Logger.logMessage("Get user info request task started", for: self, level: .info)
     }
     
     // MARK: - Private Methods
@@ -90,7 +94,7 @@ final class ProfileImageService {
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
-        print("Get user info request created: \(request)")
+        Logger.logMessage("Get user info request created: \(request)", for: self, level: .info)
         return request
         
     }

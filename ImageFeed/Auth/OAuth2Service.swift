@@ -57,17 +57,18 @@ final class OAuth2Service {
                 
                 switch result {
                 case .success(let responseBody):
-                    print("Successfully received token: \(responseBody.accessToken)")
+                    Logger.logMessage("Successfully received token: \(responseBody.accessToken)", for: "OAuth2Service", level: .info)
                     completion(.success(responseBody.accessToken))
                 case .failure(let error):
-                    print("OAuth2Service: Network or decoding error: \(error.localizedDescription)")
+                    Logger.logMessage("OAuth2Service: Network or decoding error: \(error.localizedDescription)", for: "OAuth2Service", level: .error)
                     completion(.failure(error))
                 }
             }
         }
         
         task?.resume()
-        print("Token request task started")
+        Logger.logMessage("Token request task started", for: self, level: .info)
+
     }
     
     // MARK: - Private Methods
@@ -83,14 +84,14 @@ final class OAuth2Service {
         ]
         
         guard let url = urlComponents?.url else {
-            print("Failed to create URL from components")
+            Logger.logMessage("Failed to create URL from components", for: self, level: .error)
             return nil
         }
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         
-        print("Token request created: \(request)")
+        Logger.logMessage("Token request created: \(request)", for: self, level: .info)
         
         return request
     }

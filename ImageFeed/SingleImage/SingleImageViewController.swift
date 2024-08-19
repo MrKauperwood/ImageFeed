@@ -14,6 +14,7 @@ final class SingleImageViewController: UIViewController {
             updateImageView()
         }
     }
+    var imageUrl: String? // Свойство для хранения URL изображения
     
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet var imageView: UIImageView!
@@ -24,6 +25,29 @@ final class SingleImageViewController: UIViewController {
         scrollView.delegate = self
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
+        
+        UIBlockingProgressHUD.show()
+        
+        // Установка фона
+        view.backgroundColor = .ypBlack
+        
+        // Добавляем логотип на задний план
+        addBackgroundLogo()
+        
+        // Загружаем изображение после того, как view загружен
+        if let imageUrl = imageUrl, let url = URL(string: imageUrl) {
+            
+            
+            imageView.kf.setImage(with: url) { result in
+                UIBlockingProgressHUD.dismiss()
+                switch result {
+                case .success(let value):
+                    self.image = value.image
+                case .failure(let error):
+                    Logger.logMessage("Image loading error: \(error.localizedDescription)", for: self, level: .error)
+                }
+            }
+        }
         
         if let image = image {
             updateImageView()
@@ -54,6 +78,23 @@ final class SingleImageViewController: UIViewController {
         scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
     }
     
+    // Функция для создания и добавления логотипа на задний план
+    private func addBackgroundLogo() {
+        let logoImageView = UIImageView(image: UIImage(named: "ScribbleLogo"))
+        logoImageView.contentMode = .scaleAspectFit
+        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(logoImageView)
+        view.sendSubviewToBack(logoImageView)
+
+        NSLayoutConstraint.activate([
+            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            logoImageView.widthAnchor.constraint(equalToConstant: 83),
+            logoImageView.heightAnchor.constraint(equalToConstant: 75)
+        ])
+    }
+    
     //MARK: - Actions
     @IBAction func didTapBackButton(_ sender: Any) {
         dismiss(animated: true, completion: nil)
@@ -64,6 +105,40 @@ final class SingleImageViewController: UIViewController {
         let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         
         present(activityViewController, animated: true, completion: nil)
+    }
+    
+    private func showError() {
+        let alert = UIAlertController(title: nil, message: "Что-то пошло не так. Попробовать ещё раз?", preferredStyle: .alert)
+        
+        let retryAction = UIAlertAction(title: "Повторить", style: .default) { [weak self] _ in
+            self?.retryLoadingImage()
+        }
+        
+        let cancelAction = UIAlertAction(title: "Не надо", style: .cancel, handler: nil)
+        
+        alert.addAction(retryAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func retryLoadingImage() {
+        guard let imageUrl = imageUrl, let url = URL(string: imageUrl) else { return }
+        
+        UIBlockingProgressHUD.show()
+        
+        imageView.kf.setImage(with: url) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let value):
+                self.image = value.image
+            case .failure:
+                self.showError() // Повторный вызов метода показа ошибки в случае неудачи
+            }
+        }
     }
 }
 
@@ -79,3 +154,5 @@ extension SingleImageViewController: UIScrollViewDelegate {
         scrollView.contentInset = UIEdgeInsets(top: offsetY, left: offsetX, bottom: offsetY, right: offsetX)
     }
 }
+
+

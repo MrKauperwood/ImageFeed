@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import Kingfisher
+import ProgressHUD
 
 final class ProfileViewController: UIViewController {
     
@@ -30,7 +31,7 @@ final class ProfileViewController: UIViewController {
     
     private lazy var userNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Екатерина Новикова"
+        label.text = "Алексей Бонд"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .ypWhite
         label.font = UIFont.systemFont(ofSize: 23, weight: .bold)
@@ -39,7 +40,7 @@ final class ProfileViewController: UIViewController {
     
     private lazy var nickNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "@ekaterina_nov"
+        label.text = "@lexabond"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .ypGrey
         label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
@@ -59,7 +60,7 @@ final class ProfileViewController: UIViewController {
     
     private lazy var button: UIButton = {
         let buttonImage = UIImage(systemName: "ipad.and.arrow.forward")
-        let button = UIButton.systemButton(with: buttonImage!, target: self, action: #selector(buttonTapped))
+        let button = UIButton.systemButton(with: buttonImage!, target: self, action: #selector(logOutButtonTapped))
         button.translatesAutoresizingMaskIntoConstraints = false
         button.tintColor = .ypRed
         return button
@@ -147,13 +148,13 @@ final class ProfileViewController: UIViewController {
     
     private func updateAvatar() {
         guard
-            let profileImageURL = ProfileImageService.shared.userImage?.profile_image.small,
+            let profileImageURL = ProfileImageService.shared.userImage?.profile_image.medium,
             let url = URL(string: profileImageURL)
         else { return }
         
         let processor = DownsamplingImageProcessor(size: imageView.bounds.size)
-                     |> RoundCornerImageProcessor(cornerRadius: 20)
-
+            |> RoundCornerImageProcessor(cornerRadius: imageView.bounds.size.width / 10)
+        
         imageView.kf.indicatorType = .activity
         
         
@@ -164,16 +165,56 @@ final class ProfileViewController: UIViewController {
                               ]) { result in
                                   switch result {
                                   case .success(let value):
-                                      print(value.image)
-                                      print(value.cacheType)
-                                      print(value.source)
+                                      Logger.logMessage("Image loaded successfully", for: self, level: .info)
                                   case .failure(let error):
-                                      print(error)
+                                      Logger.logMessage("Image loading error: \(error.localizedDescription)", for: self, level: .error)
                                   }
                               }
     }
     
-    @objc private func buttonTapped() {
-        print("Button was tapped")
+    @objc private func logOutButtonTapped() {
+        showConfirmationAlert()
     }
+    
+    private func navigateToLoginScreen() {
+        guard let window = UIApplication.shared.windows.first else {
+            return
+        }
+        
+        let splashViewController = SplashViewController()
+        
+        // Анимация перехода
+        let options: UIView.AnimationOptions = .transitionCrossDissolve
+        UIView.transition(with: window, duration: 0.5, options: options, animations: {
+            window.rootViewController = splashViewController
+            window.makeKeyAndVisible()
+            window.isUserInteractionEnabled = true
+        }, completion: nil)
+    }
+}
+
+extension ProfileViewController {
+    
+    private func showConfirmationAlert() {
+        let alertController = UIAlertController(title: "Пока, пока!", message: "Уверены, что хотите выйти?", preferredStyle: .alert)
+        
+        let yesAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            self?.performLogout()
+        }
+        let noAction = UIAlertAction(title: "Нет", style: .default, handler: nil)
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
+        
+        DispatchQueue.main.async {
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
+    
+    private func performLogout() {
+        UIBlockingProgressHUD.show()
+        ProfileLogoutService.shared.logout()
+        ProgressHUD.dismiss()
+        navigateToLoginScreen()
+    }
+
 }
