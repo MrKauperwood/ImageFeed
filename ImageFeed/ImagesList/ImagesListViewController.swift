@@ -10,12 +10,12 @@ import UIKit
 final class ImagesListViewController: UIViewController {
     
     // MARK: - IB Outlets
-    @IBOutlet private  var tableView: UITableView!
+    @IBOutlet var tableView: UITableView!
     
     // MARK: - Private Properties
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let activityIndicator = UIActivityIndicatorView(style: .large)
-    private var photos: [Photo] = []
+    var photos: [Photo] = []
     private var isLoadingNewPhotos = false
     
     
@@ -25,9 +25,9 @@ final class ImagesListViewController: UIViewController {
         formatter.dateFormat = "d MMMM yyyy"
         return formatter
     }()
-    private let storage = OAuth2TokenActions()
+    var storage = OAuth2TokenActions()
     
-    let imageListService = ImagesListService()
+    var imageListService = ImagesListService()
     
     // MARK: - Overrides Methods
     override func viewDidLoad() {
@@ -62,7 +62,7 @@ final class ImagesListViewController: UIViewController {
         activityIndicator.removeFromSuperview()
     }
     
-    @objc private func photosDidChange() {
+    @objc func photosDidChange() {
         updateTableViewAnimated()
     }
     
@@ -163,7 +163,7 @@ extension ImagesListViewController: UITableViewDelegate {
         }
     }
     
-    private func initiateFirstLoadIfNeeded(completion: @escaping () -> Void) {
+    func initiateFirstLoadIfNeeded(completion: @escaping () -> Void) {
         self.showLoadingIndicator()
         
         if isLoadingNewPhotos || imageListService.photos.count != 0 {

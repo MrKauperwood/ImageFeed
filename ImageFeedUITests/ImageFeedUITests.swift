@@ -11,12 +11,12 @@ import SwiftKeychainWrapper
 
 final class ImageFeedUITests: XCTestCase {
     
-    private let app = XCUIApplication() // переменная приложения
+    private let app = XCUIApplication()
     
     override func setUpWithError() throws {
-        continueAfterFailure = false // настройка выполнения тестов, которая прекратит выполнения тестов, если в тесте что-то пошло не так
+        continueAfterFailure = false
         
-        app.launch() // запускаем приложение перед каждым тестом
+        app.launch()
     }
     
     func testAuth() throws {
@@ -32,7 +32,7 @@ final class ImageFeedUITests: XCTestCase {
         let loginTextField = webView.descendants(matching: .textField).element
         XCTAssertTrue(loginTextField.waitForExistence(timeout: 5))
         loginTextField.tap()
-        loginTextField.typeText("lexabondrec@gmail.com")
+        loginTextField.typeText("l.com")
         
         
         let passwordTextField = webView.descendants(matching: .secureTextField).element
@@ -41,7 +41,7 @@ final class ImageFeedUITests: XCTestCase {
         app.tap()
         
         passwordTextField.tap()
-        passwordTextField.typeText("139751139751")
+        passwordTextField.typeText("1")
         webView.swipeUp()
         
         webView.buttons["Login"].tap()
@@ -85,7 +85,7 @@ final class ImageFeedUITests: XCTestCase {
     func testProfile() throws {
         sleep(3)
         app.tabBars.buttons.element(boundBy: 1).tap()
-       
+        
         XCTAssertTrue(app.staticTexts["Aleksei Bondarenko"].exists)
         XCTAssertTrue(app.staticTexts["@lexabond"].exists)
         

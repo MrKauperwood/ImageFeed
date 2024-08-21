@@ -9,10 +9,10 @@ import Foundation
 import WebKit
 import SwiftKeychainWrapper
 
-final class ProfileLogoutService {
+class ProfileLogoutService {
     static let shared = ProfileLogoutService()
     
-    private init() { }
+    internal init() { }
     
     public func logout() {
         cleanCookies()

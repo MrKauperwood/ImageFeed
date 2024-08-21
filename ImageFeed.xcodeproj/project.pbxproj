@@ -35,6 +35,9 @@
 		F0716F4A2BD975E2001560CD /* ImageFeedUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0716F492BD975E2001560CD /* ImageFeedUITests.swift */; };
 		F0716F4C2BD975E2001560CD /* ImageFeedUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0716F4B2BD975E2001560CD /* ImageFeedUITestsLaunchTests.swift */; };
 		F08EE29E2C74F3DA008823DF /* WebViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08EE29D2C74F3DA008823DF /* WebViewTests.swift */; };
+		F0938B0F2C75DA9500D6B975 /* ProfileViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0938B0E2C75DA9500D6B975 /* ProfileViewTests.swift */; };
+		F0938B132C75E0A700D6B975 /* ProfileViewControllerSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0938B122C75E0A700D6B975 /* ProfileViewControllerSpy.swift */; };
+		F0938B152C75EA0400D6B975 /* ImageViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0938B142C75EA0400D6B975 /* ImageViewTests.swift */; };
 		F0A3F8042C0CDF6100CACF2C /* SingleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A3F8032C0CDF6100CACF2C /* SingleImageViewController.swift */; };
 		F0A64CFE2C6CEA36008AFA84 /* ProfileLogoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A64CFD2C6CEA36008AFA84 /* ProfileLogoutService.swift */; };
 		F0A9A87B2C3C930800B9CF08 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A9A87A2C3C930800B9CF08 /* SplashViewController.swift */; };
@@ -100,6 +103,9 @@
 		F0716F4B2BD975E2001560CD /* ImageFeedUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFeedUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		F08EE29D2C74F3DA008823DF /* WebViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewTests.swift; sourceTree = "<group>"; };
 		F08EE29F2C74F5E9008823DF /* ImageFeedTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ImageFeedTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		F0938B0E2C75DA9500D6B975 /* ProfileViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewTests.swift; sourceTree = "<group>"; };
+		F0938B122C75E0A700D6B975 /* ProfileViewControllerSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewControllerSpy.swift; sourceTree = "<group>"; };
+		F0938B142C75EA0400D6B975 /* ImageViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewTests.swift; sourceTree = "<group>"; };
 		F0A3F8032C0CDF6100CACF2C /* SingleImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleImageViewController.swift; sourceTree = "<group>"; };
 		F0A64CFD2C6CEA36008AFA84 /* ProfileLogoutService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileLogoutService.swift; sourceTree = "<group>"; };
 		F0A9A87A2C3C930800B9CF08 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
@@ -220,9 +226,11 @@
 		F08EE29C2C74F3B0008823DF /* ImageFeedTests */ = {
 			isa = PBXGroup;
 			children = (
+				F08EE29F2C74F5E9008823DF /* ImageFeedTests-Bridging-Header.h */,
 				F0C72A522C750A5300416E5B /* SpyClassHelpers */,
 				F08EE29D2C74F3DA008823DF /* WebViewTests.swift */,
-				F08EE29F2C74F5E9008823DF /* ImageFeedTests-Bridging-Header.h */,
+				F0938B0E2C75DA9500D6B975 /* ProfileViewTests.swift */,
+				F0938B142C75EA0400D6B975 /* ImageViewTests.swift */,
 			);
 			path = ImageFeedTests;
 			sourceTree = "<group>";
@@ -270,6 +278,7 @@
 			children = (
 				F0C72A532C750B1D00416E5B /* WebViewPresenterSpy.swift */,
 				F0C72A552C750B3700416E5B /* WebViewViewControllerSpy.swift */,
+				F0938B122C75E0A700D6B975 /* ProfileViewControllerSpy.swift */,
 			);
 			path = SpyClassHelpers;
 			sourceTree = "<group>";
@@ -469,9 +478,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0938B0F2C75DA9500D6B975 /* ProfileViewTests.swift in Sources */,
 				F08EE29E2C74F3DA008823DF /* WebViewTests.swift in Sources */,
+				F0938B152C75EA0400D6B975 /* ImageViewTests.swift in Sources */,
 				F0C72A562C750B3700416E5B /* WebViewViewControllerSpy.swift in Sources */,
 				F0C72A542C750B1D00416E5B /* WebViewPresenterSpy.swift in Sources */,
+				F0938B132C75E0A700D6B975 /* ProfileViewControllerSpy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

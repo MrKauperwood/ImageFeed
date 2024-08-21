@@ -10,7 +10,7 @@ import UIKit
 import Kingfisher
 import ProgressHUD
 
-final class ProfileViewController: UIViewController {
+class ProfileViewController: UIViewController {
     
     // MARK: - Private Properties
     private let profileService = ProfileService.shared
@@ -19,7 +19,7 @@ final class ProfileViewController: UIViewController {
     
     private var profileImageServiceObserver: NSObjectProtocol?
     
-    private lazy var imageView: UIImageView = {
+    internal lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = profileImage
@@ -29,7 +29,7 @@ final class ProfileViewController: UIViewController {
         return imageView
     }()
     
-    private lazy var userNameLabel: UILabel = {
+    internal lazy var userNameLabel: UILabel = {
         let label = UILabel()
         label.text = "Алексей Бонд"
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -38,7 +38,7 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
-    private lazy var nickNameLabel: UILabel = {
+    internal lazy var nickNameLabel: UILabel = {
         let label = UILabel()
         label.text = "@lexabond"
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -47,7 +47,7 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
-    private lazy var descriptionLabel: UILabel = {
+    internal lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.text = "Hello, world!"
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -58,7 +58,7 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
-    private lazy var button: UIButton = {
+    internal lazy var button: UIButton = {
         let buttonImage = UIImage(systemName: "ipad.and.arrow.forward")
         let button = UIButton.systemButton(with: buttonImage!, target: self, action: #selector(logOutButtonTapped))
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -147,7 +147,7 @@ final class ProfileViewController: UIViewController {
         cache.memoryStorage.config.cleanInterval = 30
     }
     
-    private func updateAvatar() {
+    internal func updateAvatar() {
         guard
             let profileImageURL = ProfileImageService.shared.userImage?.profile_image.medium,
             let url = URL(string: profileImageURL)
@@ -173,7 +173,7 @@ final class ProfileViewController: UIViewController {
                               }
     }
     
-    @objc private func logOutButtonTapped() {
+    @objc internal func logOutButtonTapped() {
         showConfirmationAlert()
     }
     
@@ -194,9 +194,9 @@ final class ProfileViewController: UIViewController {
     }
 }
 
-extension ProfileViewController {
+extension ProfileViewController: ProfileViewProtocol {
     
-    private func showConfirmationAlert() {
+    func showConfirmationAlert() {
         let alertController = UIAlertController(title: "Пока, пока!", message: "Уверены, что хотите выйти?", preferredStyle: .alert)
         
         let yesAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
@@ -211,11 +211,16 @@ extension ProfileViewController {
         }
     }
     
-    private func performLogout() {
+    func performLogout() {
         UIBlockingProgressHUD.show()
         ProfileLogoutService.shared.logout()
         ProgressHUD.dismiss()
         navigateToLoginScreen()
     }
 
+}
+
+protocol ProfileViewProtocol: AnyObject {
+    func performLogout()
+    func showConfirmationAlert()
 }
