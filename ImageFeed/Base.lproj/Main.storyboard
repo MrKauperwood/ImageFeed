@@ -48,7 +48,7 @@
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wOH-Je-8iH" userLabel="Like Button">
                                                     <rect key="frame" x="335" y="4" width="42" height="42"/>
-                                                    <accessibility key="accessibilityConfiguration">
+                                                    <accessibility key="accessibilityConfiguration" identifier="likeButton">
                                                         <bool key="isElement" value="NO"/>
                                                     </accessibility>
                                                     <constraints>
@@ -137,6 +137,7 @@
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iLV-vg-E9z" userLabel="Back Button">
                                 <rect key="frame" x="9" y="8" width="24" height="24"/>
+                                <accessibility key="accessibilityConfiguration" identifier="backButton"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="Backward"/>
                                 <connections>
@@ -215,6 +216,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8bB-Or-3eq" userLabel="Log In button">
                                 <rect key="frame" x="16" y="680" width="361" height="48"/>
                                 <color key="backgroundColor" name="YP White"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Authenticate"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="TOq-9g-8Tz"/>
                                 </constraints>
@@ -277,6 +279,7 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="rWM-ns-lI1"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <accessibility key="accessibilityConfiguration" identifier="UnsplashWebView"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="VZT-fM-TnS" secondAttribute="bottom" id="06U-m5-47H"/>
                             <constraint firstItem="6k3-Y1-5Ln" firstAttribute="leading" secondItem="rWM-ns-lI1" secondAttribute="leading" id="7W1-vP-2Eh"/>

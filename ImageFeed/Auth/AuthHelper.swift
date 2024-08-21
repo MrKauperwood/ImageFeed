@@ -21,7 +21,7 @@ final class AuthHelper: AuthHelperProtocol {
     
     func authRequest() -> URLRequest? {
         guard let url = authURL() else { return nil }
-        
+        Logger.logMessage("Auth URL is \(url.absoluteString)", for: self, level: .info)
         return URLRequest(url: url)
     }
     

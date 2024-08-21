@@ -14,7 +14,7 @@ final class ProfileLogoutService {
     
     private init() { }
     
-    func logout() {
+    public func logout() {
         cleanCookies()
         cleanProfileData()
         cleanProfileImage()
