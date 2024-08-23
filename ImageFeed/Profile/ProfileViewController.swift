@@ -10,10 +10,22 @@ import UIKit
 import Kingfisher
 import ProgressHUD
 
-final class ProfileViewController: UIViewController {
+
+protocol ProfileViewProtocol: AnyObject {
+    func performLogout()
+    func showConfirmationAlert()
+}
+
+protocol ProfileControllerProtocol: AnyObject {
+    var presenter: ProfilePresenterProtocol? { get set }
+    func updateUserInfo(usingDataFrom profile : ProfileService.Profile)
+}
+
+
+final class ProfileViewController: UIViewController, ProfileControllerProtocol {
     
     // MARK: - Private Properties
-    private let profileService = ProfileService.shared
+    var presenter: ProfilePresenterProtocol?
     
     private let profileImage = UIImage()
     
@@ -82,9 +94,7 @@ final class ProfileViewController: UIViewController {
                 self.updateAvatar()
             }
         
-        if let profile = profileService.profile {
-            updateUserInfo(usingDataFrom: profile)
-        }
+        presenter?.viewDidLoad()
         
         setupUI()
         setUpCacheSettings()
@@ -131,7 +141,7 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    private func updateUserInfo(usingDataFrom profile : ProfileService.Profile) {
+    func updateUserInfo(usingDataFrom profile : ProfileService.Profile) {
         userNameLabel.text = profile.name
         nickNameLabel.text = profile.loginName
         descriptionLabel.text = profile.bio
@@ -220,7 +230,4 @@ extension ProfileViewController: ProfileViewProtocol {
 
 }
 
-protocol ProfileViewProtocol: AnyObject {
-    func performLogout()
-    func showConfirmationAlert()
-}
+
