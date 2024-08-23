@@ -21,6 +21,7 @@ enum Constants {
         return defaultBaseURL.appendingPathComponent("photos/\(photoID)/like")
     }
     static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
+    static let unsplashOauthAuthURLString = "/oauth/authorize/native"
 }
 
 

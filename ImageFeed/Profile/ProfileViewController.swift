@@ -10,7 +10,7 @@ import UIKit
 import Kingfisher
 import ProgressHUD
 
-class ProfileViewController: UIViewController {
+final class ProfileViewController: UIViewController {
     
     // MARK: - Private Properties
     private let profileService = ProfileService.shared

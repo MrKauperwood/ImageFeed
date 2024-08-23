@@ -25,13 +25,15 @@ final class ImagesListViewController: UIViewController {
         formatter.dateFormat = "d MMMM yyyy"
         return formatter
     }()
-    var storage = OAuth2TokenActions()
-    
-    var imageListService = ImagesListService()
+    private var storage = OAuth2TokenActions()
+    private var imageListService = ImagesListService()
     
     // MARK: - Overrides Methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Настройка индикатора, чтобы он скрывался автоматически
+        activityIndicator.hidesWhenStopped = true
         
         // Настройка tableView
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
@@ -52,14 +54,14 @@ final class ImagesListViewController: UIViewController {
     }
     
     private func showLoadingIndicator() {
-        activityIndicator.center = self.view.center
-        self.view.addSubview(activityIndicator)
+//        activityIndicator.center = self.view.center
+//        self.view.addSubview(activityIndicator)
         activityIndicator.startAnimating()
     }
     
     private func hideLoadingIndicator() {
         activityIndicator.stopAnimating()
-        activityIndicator.removeFromSuperview()
+//        activityIndicator.removeFromSuperview()
     }
     
     @objc func photosDidChange() {

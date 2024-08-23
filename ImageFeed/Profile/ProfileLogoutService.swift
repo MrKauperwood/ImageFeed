@@ -9,7 +9,7 @@ import Foundation
 import WebKit
 import SwiftKeychainWrapper
 
-class ProfileLogoutService {
+final class ProfileLogoutService {
     static let shared = ProfileLogoutService()
     
     internal init() { }

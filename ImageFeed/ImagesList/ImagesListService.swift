@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ImagesListService {
+final class ImagesListService {
     
     // MARK: - Public Properties
     static let didChangeNotification = Notification.Name("ImagesListServiceDidChange")

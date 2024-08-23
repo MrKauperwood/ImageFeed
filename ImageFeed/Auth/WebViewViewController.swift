@@ -21,9 +21,6 @@ final class WebViewViewController: UIViewController & WebViewViewControllerProto
     var presenter: WebViewPresenterProtocol?
     
     // MARK: - Private Properties
-    //    private enum WebViewConstants {
-    //        static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
-    //    }
     private var estimatedProgressObservation: NSKeyValueObservation?
     
     // MARK: - Overrides Methods
