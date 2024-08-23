@@ -97,7 +97,6 @@ final class ProfileViewController: UIViewController, ProfileControllerProtocol {
         presenter?.viewDidLoad()
         
         setupUI()
-        setUpCacheSettings()
     }
     
     override func viewDidLayoutSubviews() {
@@ -146,17 +145,7 @@ final class ProfileViewController: UIViewController, ProfileControllerProtocol {
         nickNameLabel.text = profile.loginName
         descriptionLabel.text = profile.bio
     }
-    
-    private func setUpCacheSettings() {
-        let cache = ImageCache.default
-        cache.memoryStorage.config.totalCostLimit = 300 * 1024 * 1024
-        cache.memoryStorage.config.countLimit = 150
-        cache.diskStorage.config.sizeLimit = 1000 * 1000 * 1000
-        cache.memoryStorage.config.expiration = .seconds(600)
-        cache.diskStorage.config.expiration = .never
-        cache.memoryStorage.config.cleanInterval = 30
-    }
-    
+
     internal func updateAvatar() {
         guard
             let profileImageURL = ProfileImageService.shared.userImage?.profile_image.medium,
