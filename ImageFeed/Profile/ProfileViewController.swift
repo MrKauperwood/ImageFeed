@@ -10,17 +10,12 @@ import UIKit
 import Kingfisher
 import ProgressHUD
 
-
-protocol ProfileViewProtocol: AnyObject {
-    func performLogout()
-    func showConfirmationAlert()
-}
-
 protocol ProfileControllerProtocol: AnyObject {
     var presenter: ProfilePresenterProtocol? { get set }
     func updateUserInfo(usingDataFrom profile : ProfileService.Profile)
     func updateAvatar(url: URL)
-    
+    func performLogout()
+    func showConfirmationAlert()
 }
 
 
@@ -30,8 +25,6 @@ final class ProfileViewController: UIViewController, ProfileControllerProtocol {
     var presenter: ProfilePresenterProtocol?
     
     private let profileImage = UIImage()
-    
-//    private var profileImageServiceObserver: NSObjectProtocol?
     
     internal lazy var imageView: UIImageView = {
         let imageView = UIImageView()
@@ -136,10 +129,10 @@ final class ProfileViewController: UIViewController, ProfileControllerProtocol {
         nickNameLabel.text = profile.loginName
         descriptionLabel.text = profile.bio
     }
-
+    
     func updateAvatar(url: URL) {
         let processor = DownsamplingImageProcessor(size: imageView.bounds.size)
-            |> RoundCornerImageProcessor(cornerRadius: imageView.bounds.size.width / 10)
+        |> RoundCornerImageProcessor(cornerRadius: imageView.bounds.size.width / 10)
         
         imageView.kf.indicatorType = .activity
         
@@ -180,7 +173,7 @@ final class ProfileViewController: UIViewController, ProfileControllerProtocol {
     }
 }
 
-extension ProfileViewController: ProfileViewProtocol {
+extension ProfileViewController {
     
     func showConfirmationAlert() {
         let alertController = UIAlertController(title: "Пока, пока!", message: "Уверены, что хотите выйти?", preferredStyle: .alert)
@@ -199,11 +192,11 @@ extension ProfileViewController: ProfileViewProtocol {
     
     func performLogout() {
         UIBlockingProgressHUD.show()
-        ProfileLogoutService.shared.logout()
+        presenter?.logout()
         ProgressHUD.dismiss()
         navigateToLoginScreen()
     }
-
+    
 }
 
 

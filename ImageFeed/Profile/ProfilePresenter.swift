@@ -11,15 +11,14 @@ import Kingfisher
 protocol ProfilePresenterProtocol{
     var view: ProfileControllerProtocol? { get set }
     func viewDidLoad()
+    func logout()
 }
 
 final class ProfilePresenter: ProfilePresenterProtocol {
-    
     weak var view: ProfileControllerProtocol?
     
     private let profileService = ProfileService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
-    
     
     func viewDidLoad() {
         setUpCacheSettings()
@@ -27,6 +26,10 @@ final class ProfilePresenter: ProfilePresenterProtocol {
             view?.updateUserInfo(usingDataFrom: profile)
         }
         setupAvatarObserver()
+    }
+    
+    func logout() {
+        ProfileLogoutService.shared.logout()
     }
     
     private func setupAvatarObserver() {
