@@ -76,8 +76,6 @@ final class ImagesListViewController: UIViewController, ImagesListControllerProt
         cell.likeButton.setImage(likeImage, for: .normal)
     }
     
-    
-    
     func updateTableViewAnimated() {
         guard let presenter = presenter else { return }
         let oldCount = presenter.photos.count

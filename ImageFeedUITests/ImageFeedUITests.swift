@@ -13,6 +13,11 @@ final class ImageFeedUITests: XCTestCase {
     
     private let app = XCUIApplication()
     
+    private let yourLogin = "lexabondrec@gmail.com"
+    private let yourPassword = "139751139751"
+    private let yourFullName = "Aleksei Bondarenko"
+    private let yourNickname = "@lexabond"
+    
     override func setUpWithError() throws {
         continueAfterFailure = false
         
@@ -32,16 +37,15 @@ final class ImageFeedUITests: XCTestCase {
         let loginTextField = webView.descendants(matching: .textField).element
         XCTAssertTrue(loginTextField.waitForExistence(timeout: 5))
         loginTextField.tap()
-        loginTextField.typeText("l.com")
+        loginTextField.typeText(yourLogin)
         
+        dismissKeyboardIfPresent()
         
         let passwordTextField = webView.descendants(matching: .secureTextField).element
         XCTAssertTrue(passwordTextField.waitForExistence(timeout: 5))
         
-        app.tap()
-        
         passwordTextField.tap()
-        passwordTextField.typeText("1")
+        passwordTextField.typeText(yourPassword)
         webView.swipeUp()
         
         webView.buttons["Login"].tap()
@@ -64,7 +68,6 @@ final class ImageFeedUITests: XCTestCase {
         let likeButton = cellToLike.buttons["likeButton"]
         
         likeButton.tap()
-        likeButton.tap()
         
         cellToLike.buttons["likeButton"].tap()
         
@@ -86,11 +89,21 @@ final class ImageFeedUITests: XCTestCase {
         sleep(3)
         app.tabBars.buttons.element(boundBy: 1).tap()
         
-        XCTAssertTrue(app.staticTexts["Aleksei Bondarenko"].exists)
-        XCTAssertTrue(app.staticTexts["@lexabond"].exists)
+        XCTAssertTrue(app.staticTexts[yourFullName].exists)
+        XCTAssertTrue(app.staticTexts[yourNickname].exists)
         
         app.buttons["logoutButton"].tap()
         
         app.alerts["Пока, пока!"].scrollViews.otherElements.buttons["Да"].tap()
+    }
+    
+    func dismissKeyboardIfPresent() {
+        if app.keyboards.element(boundBy: 0).exists {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                app.keyboards.buttons["Hide keyboard"].tap()
+            } else {
+                app.toolbars.buttons["Done"].tap()
+            }
+        }
     }
 }

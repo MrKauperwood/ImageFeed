@@ -14,9 +14,6 @@ protocol ImagesListPresenterProtocol{
     func loadInitialPhotos(completion: @escaping () -> Void)
     func loadMorePhotosIfNeeded(for: Int)
     func toggleLike(at index: Int, completion: @escaping (Result<Bool, Error>) -> Void)
-    
-    
-    
 }
 
 final class ImagesListPresenter: ImagesListPresenterProtocol {
@@ -133,6 +130,5 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
             }
         }
     }
-    
 }
 

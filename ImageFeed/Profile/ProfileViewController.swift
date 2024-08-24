@@ -18,7 +18,6 @@ protocol ProfileControllerProtocol: AnyObject {
     func showConfirmationAlert()
 }
 
-
 final class ProfileViewController: UIViewController, ProfileControllerProtocol {
     
     // MARK: - Private Properties
@@ -135,8 +134,6 @@ final class ProfileViewController: UIViewController, ProfileControllerProtocol {
         |> RoundCornerImageProcessor(cornerRadius: imageView.bounds.size.width / 10)
         
         imageView.kf.indicatorType = .activity
-        
-        
         imageView.kf.setImage(with: url,
                               placeholder: UIImage(named: "EllipseBlur"),
                               options: [
@@ -160,7 +157,6 @@ final class ProfileViewController: UIViewController, ProfileControllerProtocol {
         guard let window = UIApplication.shared.windows.first else {
             return
         }
-        
         let splashViewController = SplashViewController()
         
         // Анимация перехода
@@ -174,7 +170,6 @@ final class ProfileViewController: UIViewController, ProfileControllerProtocol {
 }
 
 extension ProfileViewController {
-    
     func showConfirmationAlert() {
         let alertController = UIAlertController(title: "Пока, пока!", message: "Уверены, что хотите выйти?", preferredStyle: .alert)
         
@@ -196,7 +191,6 @@ extension ProfileViewController {
         ProgressHUD.dismiss()
         navigateToLoginScreen()
     }
-    
 }
 
 
