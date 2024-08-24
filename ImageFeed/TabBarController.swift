@@ -14,12 +14,21 @@ final class TabBarController: UITabBarController {
         super.awakeFromNib()
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         
-        let imageListViewController = storyboard.instantiateViewController(withIdentifier: "ImagesListViewController")
+        // Инициализация ImageListViewController
+        guard let imageListViewController = storyboard.instantiateViewController(withIdentifier: "ImagesListViewController") as? ImagesListViewController else {
+            Logger.logMessage("Failed to cast to type ImagesListViewController", for: self, level: .error)
+            return
+        }
+        
+        let imageListViewPresenter = ImagesListPresenter()
+        imageListViewController.presenter = imageListViewPresenter
+        imageListViewPresenter.view = imageListViewController
         
         imageListViewController.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "tab_editorial_active"),
-            selectedImage: nil)
+            selectedImage: nil
+        )
         
         let profilePresenter = ProfilePresenter()
         let profileViewController = ProfileViewController()

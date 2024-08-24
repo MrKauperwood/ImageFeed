@@ -7,12 +7,19 @@
 
 import UIKit
 
-final class ImagesListViewController: UIViewController {
+protocol ImagesListControllerProtocol: AnyObject {
+    var presenter: ImagesListPresenterProtocol? { get set }
+}
+
+
+final class ImagesListViewController: UIViewController, ImagesListControllerProtocol {
     
     // MARK: - IB Outlets
     @IBOutlet var tableView: UITableView!
     
     // MARK: - Private Properties
+    var presenter: ImagesListPresenterProtocol?
+    
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let activityIndicator = UIActivityIndicatorView(style: .large)
     var photos: [Photo] = []
