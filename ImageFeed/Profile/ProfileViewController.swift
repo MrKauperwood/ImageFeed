@@ -19,6 +19,8 @@ protocol ProfileViewProtocol: AnyObject {
 protocol ProfileControllerProtocol: AnyObject {
     var presenter: ProfilePresenterProtocol? { get set }
     func updateUserInfo(usingDataFrom profile : ProfileService.Profile)
+    func updateAvatar(url: URL)
+    
 }
 
 
@@ -29,7 +31,7 @@ final class ProfileViewController: UIViewController, ProfileControllerProtocol {
     
     private let profileImage = UIImage()
     
-    private var profileImageServiceObserver: NSObjectProtocol?
+//    private var profileImageServiceObserver: NSObjectProtocol?
     
     internal lazy var imageView: UIImageView = {
         let imageView = UIImageView()
@@ -83,17 +85,6 @@ final class ProfileViewController: UIViewController, ProfileControllerProtocol {
         super.viewDidLoad()
         
         view.backgroundColor = .ypBlack
-        
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        
         presenter?.viewDidLoad()
         
         setupUI()
@@ -101,7 +92,7 @@ final class ProfileViewController: UIViewController, ProfileControllerProtocol {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updateAvatar()
+        presenter?.viewDidLoad()
     }
     
     private func setupUI() {
@@ -146,12 +137,7 @@ final class ProfileViewController: UIViewController, ProfileControllerProtocol {
         descriptionLabel.text = profile.bio
     }
 
-    internal func updateAvatar() {
-        guard
-            let profileImageURL = ProfileImageService.shared.userImage?.profile_image.medium,
-            let url = URL(string: profileImageURL)
-        else { return }
-        
+    func updateAvatar(url: URL) {
         let processor = DownsamplingImageProcessor(size: imageView.bounds.size)
             |> RoundCornerImageProcessor(cornerRadius: imageView.bounds.size.width / 10)
         
@@ -168,6 +154,7 @@ final class ProfileViewController: UIViewController, ProfileControllerProtocol {
                                       Logger.logMessage("Image loaded successfully", for: self, level: .info)
                                   case .failure(let error):
                                       Logger.logMessage("Image loading error: \(error.localizedDescription)", for: self, level: .error)
+                                      print(url.absoluteString)
                                   }
                               }
     }

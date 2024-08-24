@@ -18,14 +18,36 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     weak var view: ProfileControllerProtocol?
     
     private let profileService = ProfileService.shared
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     
     func viewDidLoad() {
         setUpCacheSettings()
-        
         if let profile = profileService.profile {
             view?.updateUserInfo(usingDataFrom: profile)
         }
+        setupAvatarObserver()
+    }
+    
+    private func setupAvatarObserver() {
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                self?.updateAvatarIfPossible()}
+        
+        updateAvatarIfPossible()
+    }
+    
+    private func updateAvatarIfPossible() {
+        guard
+            let profileImageURL = ProfileImageService.shared.userImage?.profile_image.medium,
+            let url = URL(string: profileImageURL)
+        else { return }
+        
+        view?.updateAvatar(url: url)
     }
     
     private func setUpCacheSettings() {
@@ -37,4 +59,6 @@ final class ProfilePresenter: ProfilePresenterProtocol {
         cache.diskStorage.config.expiration = .never
         cache.memoryStorage.config.cleanInterval = 30
     }
+    
+    
 }
