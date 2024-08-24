@@ -9,6 +9,12 @@ import UIKit
 
 protocol ImagesListControllerProtocol: AnyObject {
     var presenter: ImagesListPresenterProtocol? { get set }
+    
+    func updateTableView()
+    func updateLikeState(at index: Int)
+    func showLoadingIndicator()
+    func hideLoadingIndicator()
+    func updateTableViewAnimated()
 }
 
 
@@ -17,14 +23,11 @@ final class ImagesListViewController: UIViewController, ImagesListControllerProt
     // MARK: - IB Outlets
     @IBOutlet var tableView: UITableView!
     
-    // MARK: - Private Properties
     var presenter: ImagesListPresenterProtocol?
     
+    // MARK: - Private Properties
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let activityIndicator = UIActivityIndicatorView(style: .large)
-    var photos: [Photo] = []
-    private var isLoadingNewPhotos = false
-    
     
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -32,8 +35,6 @@ final class ImagesListViewController: UIViewController, ImagesListControllerProt
         formatter.dateFormat = "d MMMM yyyy"
         return formatter
     }()
-    private var storage = OAuth2TokenActions()
-    private var imageListService = ImagesListService()
     
     // MARK: - Overrides Methods
     override func viewDidLoad() {
@@ -47,59 +48,59 @@ final class ImagesListViewController: UIViewController, ImagesListControllerProt
         tableView.delegate = self
         tableView.dataSource = self
         
-        // Подписка на уведомление
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(photosDidChange),
-            name: ImagesListService.didChangeNotification,
-            object: nil
-        )
-        
-        initiateFirstLoadIfNeeded {
-            self.hideLoadingIndicator()
+        presenter?.loadInitialPhotos { [weak self] in
+            self?.hideLoadingIndicator()
         }
     }
     
-    private func showLoadingIndicator() {
-//        activityIndicator.center = self.view.center
-//        self.view.addSubview(activityIndicator)
+    func updateTableView() {
+        tableView.reloadData()
+    }
+    
+    func showLoadingIndicator() {
         activityIndicator.startAnimating()
     }
     
-    private func hideLoadingIndicator() {
+    func hideLoadingIndicator() {
         activityIndicator.stopAnimating()
-//        activityIndicator.removeFromSuperview()
     }
     
     @objc func photosDidChange() {
         updateTableViewAnimated()
     }
     
+    func updateLikeState(at index: Int) {
+        guard let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? ImagesListCell else { return }
+        let photo = presenter?.photos[index]
+        let likeImage = photo?.isLiked ?? false ? UIImage(named: "ActiveLike") : UIImage(named: "NotActiveLike")
+        cell.likeButton.setImage(likeImage, for: .normal)
+    }
+    
+    
+    
     func updateTableViewAnimated() {
-        guard !imageListService.photos.isEmpty else { return }
+        guard let presenter = presenter else { return }
+        let oldCount = presenter.photos.count
         
-        let oldCount = photos.count
-        let newCount = imageListService.photos.count
+        presenter.loadMorePhotosIfNeeded(for: oldCount)
+        
+        let newCount = presenter.photos.count
         
         if oldCount != newCount {
             tableView.performBatchUpdates {
-                photos = imageListService.photos
-                
                 let indexPaths = (oldCount..<newCount).map { i in
                     IndexPath(row: i, section: 0)
                 }
                 tableView.insertRows(at: indexPaths, with: .automatic)
             } completion: { success in
                 if !success {
-                    // Если анимация не удалась, перезагружаем таблицу
-                    self.photos = self.imageListService.photos
                     self.tableView.reloadData()
                 }
             }
         } else {
-            // Если количество фото не изменилось, обновляем массив photos
-            photos = imageListService.photos
+            tableView.reloadData()
         }
+        
     }
     
     deinit {
@@ -110,13 +111,12 @@ final class ImagesListViewController: UIViewController, ImagesListControllerProt
         if segue.identifier == showSingleImageSegueIdentifier {
             guard
                 let viewController = segue.destination as? SingleImageViewController,
-                let indexPath = sender as? IndexPath
+                let indexPath = sender as? IndexPath,
+                let photo = presenter?.photos[indexPath.row]
             else {
                 assertionFailure("Invalid segue destination")
                 return
             }
-            
-            let photo = photos[indexPath.row]
             viewController.imageUrl = photo.largeImageURL
         } else {
             super.prepare(for: segue, sender: sender)
@@ -135,80 +135,20 @@ extension ImagesListViewController: UITableViewDelegate {
         return UITableView.automaticDimension
     }
     
+    
     func tableView(
         _ tableView: UITableView,
         willDisplay cell: UITableViewCell,
         forRowAt indexPath: IndexPath
     ) {
-        // Проверяем, последняя ли ячейка
-        if indexPath.row + 1 == photos.count && !isLoadingNewPhotos {
-            
-            guard let token = storage.getTokenFromStorage() else {
-                Logger.logMessage("Failed to retrieve token", for: self, level: .error)
-                return
-            }
-            
-            isLoadingNewPhotos = true
-            
-            // Убедимся, что нет активного запроса
-            if imageListService.task == nil {
-                imageListService.fetchPhotosNextPage(token: token) { [weak self] result in
-                    guard let self = self else { return }
-                    
-                    DispatchQueue.main.async {
-                        self.isLoadingNewPhotos = false // Сбрасываем флаг после завершения загрузки
-                        
-                        switch result {
-                        case .success(let message):
-                            Logger.logMessage("Success: \(message)", for: self, level: .info)
-                        case .failure(let error):
-                            Logger.logMessage("Error: \(error.localizedDescription)", for: self, level: .error)
-                        }
-                    }
-                }
-            } else {
-                Logger.logMessage("Request is already in progress, skipping new fetch", for: self, level: .warning)
-            }
-        }
-    }
-    
-    func initiateFirstLoadIfNeeded(completion: @escaping () -> Void) {
-        self.showLoadingIndicator()
-        
-        if isLoadingNewPhotos || imageListService.photos.count != 0 {
-            completion()
-            return
-        }
-        
-        isLoadingNewPhotos = true
-        
-        guard let token = storage.getTokenFromStorage() else {
-            Logger.logMessage("Failed to retrieve token", for: self, level: .error)
-            completion()
-            return
-        }
-        
-        imageListService.fetchPhotosNextPage(token: token) { [weak self] result in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                self.isLoadingNewPhotos = false // Сбрасываем флаг после завершения загрузки
-                self.hideLoadingIndicator()
-                switch result {
-                case .success(let message):
-                    Logger.logMessage("Success: \(message)", for: self, level: .info)
-                case .failure(let error):
-                    Logger.logMessage("Error: \(error.localizedDescription)", for: self, level: .error)
-                }
-                completion()
-            }
-        }
+        presenter?.loadMorePhotosIfNeeded(for: indexPath.row)
     }
     
 }
 
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photos.count
+        return presenter?.photos.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -227,7 +167,7 @@ extension ImagesListViewController: UITableViewDataSource {
 
 extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        let photo = photos[indexPath.row]
+        guard let photo = presenter?.photos[indexPath.row] else { return }
         
         let placeholderImage = UIImage(named: "RectangleBlur")
         
@@ -260,37 +200,26 @@ extension ImagesListViewController {
 }
 
 extension ImagesListViewController: ImagesListCellDelegate {
+    
+    
     func imageListCellDidTapLike(_ cell: ImagesListCell) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
-        let photo = photos[indexPath.row]
         
         // Добавляем вибрацию при нажатии на лайк
         let feedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
         feedbackGenerator.impactOccurred()
         
         // Анимация лайка
-        animateLikeButton(cell.likeButton, isLiked: !photo.isLiked)
+        animateLikeButton(cell.likeButton, isLiked: !(presenter?.photos[indexPath.row].isLiked ?? false))
         
-        // Блокируем взаимодействие с интерфейсом
-        self.view.isUserInteractionEnabled = false
-        
-        guard let token = self.storage.getTokenFromStorage() else {
-            Logger.logMessage("Failed to retrieve token", for: self, level: .error)
-            self.view.isUserInteractionEnabled = true // Разблокируем интерфейс в случае ошибки
-            return
-        }
-        
-        imageListService.changeLike(photoId: photo.id, isLike: !photo.isLiked, token: token) { [weak self] result in
-            guard let self = self else { return }
-            
+        presenter?.toggleLike(at: indexPath.row) { [weak self] result in
             DispatchQueue.main.async {
-                self.view.isUserInteractionEnabled = true // Разблокируем интерфейс
+                self?.view.isUserInteractionEnabled = true
                 switch result {
-                case .success:
-                    self.photos = self.imageListService.photos
-                    cell.setIsLiked(self.photos[indexPath.row].isLiked)
+                case .success(let isLiked):
+                    cell.setIsLiked(isLiked)
                 case .failure(let error):
-                    self.showErrorAlert(error: error)
+                    self?.showErrorAlert(error: error)
                 }
             }
         }
@@ -312,8 +241,8 @@ private func animateLikeButton(_ button: UIButton, isLiked: Bool) {
                    initialSpringVelocity: 0.5,
                    options: .curveEaseInOut,
                    animations: {
-                    button.transform = CGAffineTransform.identity
-                   }, completion: nil)
+        button.transform = CGAffineTransform.identity
+    }, completion: nil)
 }
 
 extension ImagesListViewController {
@@ -329,4 +258,3 @@ extension ImagesListViewController {
         }
     }
 }
-

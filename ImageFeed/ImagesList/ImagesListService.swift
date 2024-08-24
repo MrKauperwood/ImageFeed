@@ -31,6 +31,10 @@ final class ImagesListService {
         case invalidRequest
     }
     
+    func getPhotos() -> [Photo] {
+        return photos
+    }
+    
     // MARK: - Public Methods
     public func fetchPhotosNextPage(token: String, completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
