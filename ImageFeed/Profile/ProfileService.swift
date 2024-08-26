@@ -26,9 +26,9 @@ final class ProfileService {
     
     struct ProfileResult: Codable {
         let id: String
-        let username: String
+        let username: String?
         let first_name: String
-        let last_name: String
+        let last_name: String?
         let bio: String?
     }
     
@@ -39,9 +39,9 @@ final class ProfileService {
         let bio: String?
         
         init(from profileResult: ProfileResult) {
-            self.username = profileResult.username
-            self.name = profileResult.first_name + " " + profileResult.last_name
-            self.loginName = "@" + profileResult.username
+            self.username = profileResult.username ?? ""
+            self.name = profileResult.first_name + " " + (profileResult.last_name ?? "")
+            self.loginName = "@" + self.username
             self.bio = profileResult.bio
         }
     }

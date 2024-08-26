@@ -8,7 +8,7 @@
 import Foundation
 import SwiftKeychainWrapper
 
-final class OAuth2TokenActions {
+class OAuth2TokenActions {
     // MARK: - Private Properties
     private let tokenKey = "AuthToken"
     

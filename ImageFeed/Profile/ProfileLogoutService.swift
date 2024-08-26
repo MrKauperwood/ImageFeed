@@ -12,9 +12,9 @@ import SwiftKeychainWrapper
 final class ProfileLogoutService {
     static let shared = ProfileLogoutService()
     
-    private init() { }
+    internal init() { }
     
-    func logout() {
+    public func logout() {
         cleanCookies()
         cleanProfileData()
         cleanProfileImage()

@@ -31,6 +31,10 @@ final class ImagesListService {
         case invalidRequest
     }
     
+    func getPhotos() -> [Photo] {
+        return photos
+    }
+    
     // MARK: - Public Methods
     public func fetchPhotosNextPage(token: String, completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
@@ -179,7 +183,7 @@ final class ImagesListService {
         isLike: Bool,
         token: String) -> URLRequest? {
             
-            let urlComponents = URLComponents(string: Constants.getChangeLikePhotoURL(for: photoId).absoluteString)
+            let urlComponents = URLComponents(string: Constants.changeLikePhotoURL(for: photoId).absoluteString)
             guard let url = urlComponents?.url else {
                 Logger.logMessage("Failed to create change like for photo URL from components", for: self, level: .error)
                 return nil

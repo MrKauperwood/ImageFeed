@@ -10,16 +10,22 @@ import UIKit
 import Kingfisher
 import ProgressHUD
 
-final class ProfileViewController: UIViewController {
+protocol ProfileControllerProtocol: AnyObject {
+    var presenter: ProfilePresenterProtocol? { get set }
+    func updateUserInfo(usingDataFrom profile : ProfileService.Profile)
+    func updateAvatar(url: URL)
+    func performLogout()
+    func showConfirmationAlert()
+}
+
+final class ProfileViewController: UIViewController, ProfileControllerProtocol {
     
     // MARK: - Private Properties
-    private let profileService = ProfileService.shared
+    var presenter: ProfilePresenterProtocol?
     
     private let profileImage = UIImage()
     
-    private var profileImageServiceObserver: NSObjectProtocol?
-    
-    private lazy var imageView: UIImageView = {
+    internal lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = profileImage
@@ -29,7 +35,7 @@ final class ProfileViewController: UIViewController {
         return imageView
     }()
     
-    private lazy var userNameLabel: UILabel = {
+    internal lazy var userNameLabel: UILabel = {
         let label = UILabel()
         label.text = "Алексей Бонд"
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -38,7 +44,7 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
-    private lazy var nickNameLabel: UILabel = {
+    internal lazy var nickNameLabel: UILabel = {
         let label = UILabel()
         label.text = "@lexabond"
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -47,7 +53,7 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
-    private lazy var descriptionLabel: UILabel = {
+    internal lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.text = "Hello, world!"
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -58,11 +64,12 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
-    private lazy var button: UIButton = {
+    internal lazy var button: UIButton = {
         let buttonImage = UIImage(systemName: "ipad.and.arrow.forward")
         let button = UIButton.systemButton(with: buttonImage!, target: self, action: #selector(logOutButtonTapped))
         button.translatesAutoresizingMaskIntoConstraints = false
         button.tintColor = .ypRed
+        button.accessibilityIdentifier = "logoutButton"
         return button
     }()
     
@@ -70,28 +77,14 @@ final class ProfileViewController: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .ypBlack
-        
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        
-        if let profile = profileService.profile {
-            updateUserInfo(usingDataFrom: profile)
-        }
+        presenter?.viewDidLoad()
         
         setupUI()
-        setUpCacheSettings()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updateAvatar()
+        presenter?.viewDidLoad()
     }
     
     private func setupUI() {
@@ -130,34 +123,17 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    private func updateUserInfo(usingDataFrom profile : ProfileService.Profile) {
+    func updateUserInfo(usingDataFrom profile : ProfileService.Profile) {
         userNameLabel.text = profile.name
         nickNameLabel.text = profile.loginName
         descriptionLabel.text = profile.bio
     }
     
-    private func setUpCacheSettings() {
-        let cache = ImageCache.default
-        cache.memoryStorage.config.totalCostLimit = 300 * 1024 * 1024
-        cache.memoryStorage.config.countLimit = 150
-        cache.diskStorage.config.sizeLimit = 1000 * 1000 * 1000
-        cache.memoryStorage.config.expiration = .seconds(600)
-        cache.diskStorage.config.expiration = .never
-        cache.memoryStorage.config.cleanInterval = 30
-    }
-    
-    private func updateAvatar() {
-        guard
-            let profileImageURL = ProfileImageService.shared.userImage?.profile_image.medium,
-            let url = URL(string: profileImageURL)
-        else { return }
-        
+    func updateAvatar(url: URL) {
         let processor = DownsamplingImageProcessor(size: imageView.bounds.size)
-            |> RoundCornerImageProcessor(cornerRadius: imageView.bounds.size.width / 10)
+        |> RoundCornerImageProcessor(cornerRadius: imageView.bounds.size.width / 10)
         
         imageView.kf.indicatorType = .activity
-        
-        
         imageView.kf.setImage(with: url,
                               placeholder: UIImage(named: "EllipseBlur"),
                               options: [
@@ -168,11 +144,12 @@ final class ProfileViewController: UIViewController {
                                       Logger.logMessage("Image loaded successfully", for: self, level: .info)
                                   case .failure(let error):
                                       Logger.logMessage("Image loading error: \(error.localizedDescription)", for: self, level: .error)
+                                      print(url.absoluteString)
                                   }
                               }
     }
     
-    @objc private func logOutButtonTapped() {
+    @objc internal func logOutButtonTapped() {
         showConfirmationAlert()
     }
     
@@ -180,7 +157,6 @@ final class ProfileViewController: UIViewController {
         guard let window = UIApplication.shared.windows.first else {
             return
         }
-        
         let splashViewController = SplashViewController()
         
         // Анимация перехода
@@ -194,8 +170,7 @@ final class ProfileViewController: UIViewController {
 }
 
 extension ProfileViewController {
-    
-    private func showConfirmationAlert() {
+    func showConfirmationAlert() {
         let alertController = UIAlertController(title: "Пока, пока!", message: "Уверены, что хотите выйти?", preferredStyle: .alert)
         
         let yesAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
@@ -210,11 +185,12 @@ extension ProfileViewController {
         }
     }
     
-    private func performLogout() {
+    func performLogout() {
         UIBlockingProgressHUD.show()
-        ProfileLogoutService.shared.logout()
+        presenter?.logout()
         ProgressHUD.dismiss()
         navigateToLoginScreen()
     }
-
 }
+
+
